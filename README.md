@@ -2,7 +2,7 @@
 
 Submit your webpage to the class website
 
-We will use Andrew File System(AFS) to store and display webpages. Here is a step by step tutorial for how to do this:
+We will use [Andrew File System(AFS)](https://www.cmu.edu/computing/services/comm-collab/collaboration/afs/how-to/index.html) to store and display webpages. Here is a step by step tutorial for how to do this:
 
 0. Connect to CMU VPN
 
@@ -20,6 +20,7 @@ We will use Andrew File System(AFS) to store and display webpages. Here is a ste
     ```
 5. File Transfer. Unzip your website and copy the folder to your project directory:
     ```
+    unzip projX.zip -d projX 
     cp -r projX/ /afs/andrew.cmu.edu/course/16/825/www/projects/liweiy/projX
     ```
    
@@ -33,6 +34,6 @@ We will use Andrew File System(AFS) to store and display webpages. Here is a ste
         index.html
         data/...
     ```
-6. Publish. The course website needs to be refreshed with your updated files. <br>Do that by going here, choosing web pages for a course, and inputing 16-825.
+6. Publish. The course website needs to be refreshed with your updated files. <br>Do that by going [here](https://www.andrew.cmu.edu/server/publish.html), choosing web pages for a course, and inputing *16-825*.
 
 7. Last step, test your page by visiting: http://www.andrew.cmu.edu/course/16-825/projects/liweiy/projX/.
