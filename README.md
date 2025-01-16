@@ -1,1 +1,36 @@
 # 16825-L3D
+
+Submit your webpage to the class website
+
+We will use Andrew File System(AFS) to store and display webpages. Here is a step by step tutorial for how to do this:
+
+1. Please make sure to remove all version control directories (e.g. .git) from your website folder, and make sure that the total size is reasonable (less than 20 mb)
+
+2. Place your website under folder projX and zip it. Please make sure that your main report page is called index.html so browsers open it automatically. <br> X is the hw number.
+
+3. Remote Copy. Use WinSCP or your favorite scp/ftp tool to copy all your files to your Andrew home directory 
+    ```
+    scp projX.zip liweiy@linux.andrew.cmu.edu:/afs/andrew.cmu.edu/usr/liweiy/
+    ```
+4. Log in to a Unix Andrew machine: 
+    ```
+    ssh liweiy@linux.andrew.cmu.edu
+    ```
+5. File Transfer. Unzip your website and copy the folder to your project directory:
+    ```
+    cp -r projX/ /afs/andrew.cmu.edu/course/16/825/www/projects/liweiy/projX
+    ```
+   
+    The folder structure should look like this:
+    ```
+    # suppose you are at /afs/andrew.cmu.edu/course/16/825/www/projects/liweiy
+    proj1/
+        index.html
+        data/...
+    proj2/
+        index.html
+        data/...
+    ```
+6. Publish. The course website needs to be refreshed with your updated files. <br>Do that by going here, choosing web pages for a course, and inputing 16-825.
+
+7. Last step, test your page by visiting: http://www.andrew.cmu.edu/course/16-825/projects/liweiy/projX/.
