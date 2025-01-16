@@ -4,6 +4,8 @@ Submit your webpage to the class website
 
 We will use Andrew File System(AFS) to store and display webpages. Here is a step by step tutorial for how to do this:
 
+0. Connect to CMU VPN
+
 1. Please make sure to remove all version control directories (e.g. .git) from your website folder, and make sure that the total size is reasonable (less than 20 mb)
 
 2. Place your website under folder projX and zip it. Please make sure that your main report page is called index.html so browsers open it automatically. <br> X is the hw number.
