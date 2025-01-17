@@ -8,7 +8,7 @@ We will use [Andrew File System(AFS)](https://www.cmu.edu/computing/services/com
 
 1. Please make sure to remove all version control directories (e.g. .git) from your website folder, and make sure that the total size is reasonable (less than 20 mb)
 
-2. Place your website under folder projX and zip it. Please make sure that your main report page is called index.html so browsers open it automatically. <br> X is the hw number.
+2. Place your website under folder projX and zip it. Please make sure that your main report page is called index.html so browsers open it automatically. <br> X is the hw number
 
 3. Remote Copy. Use WinSCP or your favorite scp/ftp tool to copy all your files to your Andrew home directory 
     ```
@@ -21,7 +21,7 @@ We will use [Andrew File System(AFS)](https://www.cmu.edu/computing/services/com
 5. File Transfer. Unzip your website and copy the folder to your project directory:
     ```
     unzip projX.zip -d projX 
-    cp -r projX/ /afs/andrew.cmu.edu/course/16/825/www/projects/liweiy/projX
+    cp -r projX/ /afs/andrew.cmu.edu/course/16/825/www/projects/liweiy/
     ```
    
     The folder structure should look like this:
@@ -36,4 +36,4 @@ We will use [Andrew File System(AFS)](https://www.cmu.edu/computing/services/com
     ```
 6. Publish. The course website needs to be refreshed with your updated files. <br>Do that by going [here](https://www.andrew.cmu.edu/server/publish.html), choosing web pages for a course, and inputing *16-825*.
 
-7. Last step, test your page by visiting: http://www.andrew.cmu.edu/course/16-825/projects/liweiy/projX/.
+7. Last step, test your page by visiting: http://www.andrew.cmu.edu/course/16-825/projects/liweiy/projX/

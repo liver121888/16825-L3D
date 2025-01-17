@@ -277,19 +277,19 @@ Thank you for such a rich and engaging discussion! It's exciting to collaborate 
 
 [Klein bottle](https://en.wikipedia.org/wiki/Klein_bottle)
 
-![bottle](kettle.png)
+![bottle](data/kettle.png)
 
 [Source](https://m.media-amazon.com/images/I/91MIQG6CL9L.jpg)
 
 [Prince Rupert's drop](https://en.wikipedia.org/wiki/Prince_Rupert%27s_drop)
 
-![drop](1.webp)
+![drop](data/1.webp)
 
 [Source](https://rupertsdrops.com/products/prince-ruperts-drop)
 
 
 ## Task 3. Funny GIFs
 
-![clown](clown.gif)
+![clown](data/clown.gif)
 
 [Source](https://www.bilibili.com/video/BV1yu4y1q7Ha/?share_source=copy_web&vd_source=9b15eec568ded31d679724530833e5e4)
