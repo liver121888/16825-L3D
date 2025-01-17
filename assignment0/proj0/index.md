@@ -283,7 +283,7 @@ Thank you for such a rich and engaging discussion! It's exciting to collaborate 
 
 [Prince Rupert's drop](https://en.wikipedia.org/wiki/Prince_Rupert%27s_drop)
 
-![bottle](1.webp)
+![drop](1.webp)
 
 [Source](https://rupertsdrops.com/products/prince-ruperts-drop)
 
