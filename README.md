@@ -1,6 +1,18 @@
 # 16825-L3D
 
-Submit your webpage to the class website
+## Submit code to Canvas
+For every assignment you should create a main.py that can be used to run all your code for the assignment, and a README.md file that contains all required documentation. Place all source code used to generate your results, as well as any documentation required to use the code, in a folder named andrewid_code_projX where X is the hw number. Zip the whole folder and submit the zip to Canvas. Here is an example of what your folder structure should look like:
+
+```
+andrewid_code_proj1/
+    main.py
+    README.md
+    utils.py
+    ....
+## zip the whole folder to andrewid_code_proj1.zip:
+```
+
+## Submit your webpage to the class website
 
 We will use [Andrew File System(AFS)](https://www.cmu.edu/computing/services/comm-collab/collaboration/afs/how-to/index.html) to store and display webpages. Here is a step by step tutorial for how to do this:
 
