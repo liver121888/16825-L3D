@@ -10,10 +10,12 @@ from pytorch3d.ops import sample_points_from_meshes
 from pytorch3d.ops import knn_points
 import mcubes
 import utils_vox
+import imageio
 import matplotlib.pyplot as plt 
 from pytorch3d.transforms import Rotate, axis_angle_to_matrix
 import math
 import numpy as np
+from utils import get_points_renderer, get_mesh_renderer
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Singleto3D', add_help=False)
@@ -162,13 +164,45 @@ def evaluate_model(args):
 
         predictions = model(images_gt, args)
 
+        print(predictions.shape)
+        print(predictions)
+
         metrics = evaluate(predictions, mesh_gt, thresholds, args)
 
         # TODO:
-        # if (step % args.vis_freq) == 0:
-        #     # visualization block
-        #     #  rend = 
-        #     plt.imsave(f'vis/{step}_{args.type}.png', rend)
+        if (step % args.vis_freq) == 0:
+            # visualization block
+
+            num_views = 36
+            R, T = pytorch3d.renderer.look_at_view_transform(
+                dist=3,
+                elev=0,
+                azim=np.linspace(-180, 180, num_views, endpoint=False),
+            )
+            cameras = pytorch3d.renderer.FoVPerspectiveCameras(
+                R=R,
+                T=T,
+                device=args.device
+            )
+            lights = pytorch3d.renderer.PointLights(location=[[0, 0.0, -3.0]], device=args.device,)
+
+            if args.type == "vox":
+                H, W, D = predictions.shape[2:]
+                vertices, faces = mcubes.marching_cubes(predictions.detach().cpu().squeeze().numpy(), isovalue=0.5)
+                vertices = torch.tensor(vertices).float()
+                faces = torch.tensor(faces.astype(int))
+                mesh = pytorch3d.structures.Meshes([vertices], [faces])
+                mesh = utils_vox.Mem2Ref(mesh, H, W, D)
+                renderer = get_mesh_renderer(image_size=256)
+                rend = renderer(mesh.extend(num_views), cameras=cameras, lights=lights)
+
+            # elif args.type == "point":
+            # else:
+            #     mesh = predictions
+
+            my_images = (rend[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+            imageio.mimsave(args.output_path, list(my_images), duration=1000//15, loop=0)
+            # plt.imsave(f'vis/{step}_{args.type}.png', rend)
       
 
         total_time = time.time() - start_time
