@@ -207,17 +207,17 @@ if main_args.q == 0 or main_args.q == 2:
     # evaluate_model(q2_eval_args)
 
     ### 2.2. Image to point cloud (20 points)
-    print("Q2 point")
-    q2_train_args.type = "point"
-    q2_eval_args.type = "point"
-    q2_eval_args.updateOutputPath()
-    train_model(q2_train_args)
+    # print("Q2 point")
+    # q2_train_args.type = "point"
+    # q2_eval_args.type = "point"
+    # q2_eval_args.updateOutputPath()
+    # train_model(q2_train_args)
     # evaluate_model(q2_eval_args)
 
     ### 2.3. Image to mesh (20 points)
-    # print("Q2 mesh")
-    # q2_train_args.type = "mesh"
-    # q2_eval_args.type = "mesh"
-    # q2_eval_args.updateOutputPath()
-    # # train_model(q2_train_args)
-    # evaluate_model(q2_eval_args)
+    print("Q2 mesh")
+    q2_train_args.type = "mesh"
+    q2_eval_args.type = "mesh"
+    q2_eval_args.updateOutputPath()
+    train_model(q2_train_args)
+    evaluate_model(q2_eval_args)
