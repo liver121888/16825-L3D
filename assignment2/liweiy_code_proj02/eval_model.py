@@ -92,19 +92,16 @@ def evaluate(predictions, mesh_gt, thresholds, args):
     if args.type == "vox":
         voxels_src = predictions
         H,W,D = voxels_src.shape[2:]
-        vertices_src, faces_src = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), isovalue=0.5)
+        vertices_src, faces_src = mcubes.marching_cubes(voxels_src.detach().cpu().squeeze().numpy(), isovalue=0.2)
         vertices_src = torch.tensor(vertices_src).float()
+        if vertices_src.shape[0] == 0:
+            return None
         faces_src = torch.tensor(faces_src.astype(int))
         mesh_src = pytorch3d.structures.Meshes([vertices_src], [faces_src])
-        if mesh_src.verts_packed().shape[0] == 0:
-            for t in thresholds:
-                metrics = {}
-                metrics["Precision@%f" % t] = 0.0
-                metrics["Recall@%f" % t] = 0.0
-                metrics["F1@%f" % t] = 0.0
-            return metrics
+        # print(voxels_src.shape)
+        # mesh_src = utils_vox.vox_to_mesh(voxels_src.squeeze(0))
         pred_points = sample_points_from_meshes(mesh_src, args.n_points)
-        pred_points = utils_vox.Mem2Ref(pred_points, H, W, D)
+        pred_points = utils_vox.Mem2Ref(pred_points.detach().cpu(), H, W, D)
         # Apply a rotation transform to align predicted voxels to gt mesh
         angle = -math.pi
         axis_angle = torch.as_tensor(np.array([[0.0, angle, 0.0]]))
@@ -177,9 +174,9 @@ def evaluate_model(args):
 
         metrics = evaluate(predictions, mesh_gt, thresholds, args)
 
-        # if metrics is None:
-        #     print("Skipping invalid iter %d" % step)
-        #     continue
+        if metrics is None:
+            print("Skipping invalid iter %d" % step)
+            continue
 
         # TODO:
         if (step % args.vis_freq) == 0:
@@ -237,6 +234,7 @@ def evaluate_model(args):
 
         f1_05 = metrics['F1@0.050000']
         avg_f1_score_05.append(f1_05)
+        # print(metrics.keys())
         avg_p_score.append(torch.tensor([metrics["Precision@%f" % t] for t in thresholds]))
         avg_r_score.append(torch.tensor([metrics["Recall@%f" % t] for t in thresholds]))
         avg_f1_score.append(torch.tensor([metrics["F1@%f" % t] for t in thresholds]))

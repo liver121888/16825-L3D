@@ -160,12 +160,12 @@ def get_inbounds(xyz, Z, Y, X, already_mem=False):
     inbounds = x_valid & y_valid & z_valid
     return inbounds.bool()
 
-def vox_to_mesh(vox, color=[0.7, 0.7, 1]):
-    mesh = cubify(vox, device=vox.device, thresh=0.5)
+def vox_to_mesh(vox, color=[0.7, 0.7, 1], threshold=0.1):
+    mesh = cubify(vox, device=vox.device, thresh=threshold)
     vertices, faces = mesh.verts_list()[0], mesh.faces_list()[0]
     vertices = vertices.unsqueeze(0)
     faces = faces.unsqueeze(0)
-    textures = torch.ones_like(vertices)
+    textures = torch.ones_like(vertices).to(vox.device)
     textures = textures * torch.tensor(color).to(vox.device)
     # print(vertices.shape, faces.shape, textures.shape)
     mesh = Meshes(verts=vertices, faces=faces, textures=TexturesVertex(textures)).to(vox.device)

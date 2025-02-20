@@ -56,7 +56,7 @@ def chamfer_loss(point_cloud_src,point_cloud_tgt):
         point_cloud_src,
         K=1
     )
-    loss_chamfer = torch.sum(dists_st) + torch.sum(dists_ts)
+    loss_chamfer = torch.mean(torch.mean(dists_st) + torch.mean(dists_ts))
     return loss_chamfer
 
 	# compare: pytorch3d
