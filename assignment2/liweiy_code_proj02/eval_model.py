@@ -30,6 +30,7 @@ def get_args_parser():
     parser.add_argument('--load_checkpoint', action='store_true')  
     parser.add_argument('--device', default='cuda', type=str) 
     parser.add_argument('--load_feat', action='store_true') 
+    parser.add_argument('--output_path', default='output/eval.gif', type=str)
     return parser
 
 def preprocess(feed_dict, args):
@@ -95,6 +96,13 @@ def evaluate(predictions, mesh_gt, thresholds, args):
         vertices_src = torch.tensor(vertices_src).float()
         faces_src = torch.tensor(faces_src.astype(int))
         mesh_src = pytorch3d.structures.Meshes([vertices_src], [faces_src])
+        if mesh_src.verts_packed().shape[0] == 0:
+            for t in thresholds:
+                metrics = {}
+                metrics["Precision@%f" % t] = 0.0
+                metrics["Recall@%f" % t] = 0.0
+                metrics["F1@%f" % t] = 0.0
+            return metrics
         pred_points = sample_points_from_meshes(mesh_src, args.n_points)
         pred_points = utils_vox.Mem2Ref(pred_points, H, W, D)
         # Apply a rotation transform to align predicted voxels to gt mesh
@@ -164,10 +172,14 @@ def evaluate_model(args):
 
         predictions = model(images_gt, args)
 
-        print(predictions.shape)
-        print(predictions)
+        # print(predictions.shape)
+        # print(predictions)
 
         metrics = evaluate(predictions, mesh_gt, thresholds, args)
+
+        # if metrics is None:
+        #     print("Skipping invalid iter %d" % step)
+        #     continue
 
         # TODO:
         if (step % args.vis_freq) == 0:
@@ -186,22 +198,37 @@ def evaluate_model(args):
             )
             lights = pytorch3d.renderer.PointLights(location=[[0, 0.0, -3.0]], device=args.device,)
 
+            renderer = None
+            data = None
             if args.type == "vox":
-                H, W, D = predictions.shape[2:]
-                vertices, faces = mcubes.marching_cubes(predictions.detach().cpu().squeeze().numpy(), isovalue=0.5)
-                vertices = torch.tensor(vertices).float()
-                faces = torch.tensor(faces.astype(int))
-                mesh = pytorch3d.structures.Meshes([vertices], [faces])
-                mesh = utils_vox.Mem2Ref(mesh, H, W, D)
+                # print(predictions.shape)
+                predictions = predictions.squeeze(0)
+                # print(predictions.shape)
+                data = utils_vox.vox_to_mesh(predictions)
                 renderer = get_mesh_renderer(image_size=256)
-                rend = renderer(mesh.extend(num_views), cameras=cameras, lights=lights)
+            elif args.type == "point":
+                # print(predictions.shape)
+                # predictions = predictions.squeeze(0)
+                r = torch.ones(predictions.shape[-2:])
+                r = (r * torch.tensor([0.7, 0.7, 1])).unsqueeze(0).to(args.device)
+                # print(predictions.shape)
+                # print(r.shape)
+                data = pytorch3d.structures.Pointclouds(points=predictions, features=r).detach()
+                renderer = get_points_renderer(image_size=256)
+            else:
+                vertices, faces = predictions.verts_list()[0], predictions.faces_list()[0]
+                vertices = vertices.unsqueeze(0)
+                faces = faces.unsqueeze(0)
+                textures = torch.ones_like(vertices)
+                textures = textures * torch.tensor([0.7, 0.7, 1]).to(args.device)
+                # print(vertices.shape, faces.shape, textures.shape)
+                data = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
+                renderer = get_mesh_renderer(image_size=256)
 
-            # elif args.type == "point":
-            # else:
-            #     mesh = predictions
+            rend = renderer(data.extend(num_views), cameras=cameras, lights=lights)
 
             my_images = (rend[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
-            imageio.mimsave(args.output_path, list(my_images), duration=1000//15, loop=0)
+            imageio.mimsave(args.output_path[:-4] + f"_{step}.gif", list(my_images), duration=1000//15, loop=0)
             # plt.imsave(f'vis/{step}_{args.type}.png', rend)
       
 

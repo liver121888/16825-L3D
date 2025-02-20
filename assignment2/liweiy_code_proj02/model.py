@@ -58,13 +58,24 @@ class SingleViewto3D(nn.Module):
                 nn.ConvTranspose3d(32, 1, kernel_size=1),
                 torch.nn.Sigmoid()
             )
-
         elif args.type == "point":
             # Input: b x 512
             # Output: b x args.n_points x 3  
             self.n_point = args.n_points
             # TODO:
-            # self.decoder =             
+            self.fc_projection = nn.Linear(512, 512)
+            self.bn_projection = nn.BatchNorm1d(512)
+            self.fc1 = nn.Linear(512, 256)
+            self.bn1 = nn.BatchNorm1d(256)
+            self.fc2 = nn.Linear(256, 128)
+            self.bn2 = nn.BatchNorm1d(128)
+            self.fc3 = nn.Linear(128, 256)
+            self.bn3 = nn.BatchNorm1d(256)
+            self.fc4 = nn.Linear(256, 512)
+            self.bn4 = nn.BatchNorm1d(512)
+
+            self.fc_final = nn.Linear(512, self.n_point * 3)
+
         elif args.type == "mesh":
             # Input: b x 512
             # Output: b x mesh_pred.verts_packed().shape[0] x 3  
@@ -72,7 +83,19 @@ class SingleViewto3D(nn.Module):
             mesh_pred = ico_sphere(4, self.device)
             self.mesh_pred = pytorch3d.structures.Meshes(mesh_pred.verts_list()*args.batch_size, mesh_pred.faces_list()*args.batch_size)
             # TODO:
-            # self.decoder =             
+            # self.decoder =          
+            # 
+            self.fc_projection = nn.Linear(512, 512)
+            self.bn_projection = nn.BatchNorm1d(512)
+            self.fc1 = nn.Linear(512, 256)
+            self.bn1 = nn.BatchNorm1d(256)
+            self.fc2 = nn.Linear(256, 128)
+            self.bn2 = nn.BatchNorm1d(128)
+            self.fc3 = nn.Linear(128, 256)
+            self.bn3 = nn.BatchNorm1d(256)
+            self.fc4 = nn.Linear(256, 512)
+            self.bn4 = nn.BatchNorm1d(512)
+            self.fc_final = nn.Linear(512, mesh_pred.verts_packed().shape[0] * 3) 
 
     def forward(self, images, args):
         results = dict()
@@ -96,12 +119,30 @@ class SingleViewto3D(nn.Module):
 
         elif args.type == "point":
             # TODO:
-            # pointclouds_pred =             
+            x0 = torch.nn.functional.relu(self.bn_projection(self.fc_projection(encoded_feat)))
+            x1 = torch.nn.functional.relu(self.bn1(self.fc1(x0)))
+            x2 = torch.nn.functional.relu(self.bn2(self.fc2(x1)))
+            x = torch.nn.functional.relu(self.bn3(self.fc3(x2))) + x1
+            x = torch.nn.functional.relu(self.bn4(self.fc4(x))) + x0
+            x = self.fc_final(x)
+            pointclouds_pred = x.reshape(B, self.n_point, 3)
             return pointclouds_pred
 
         elif args.type == "mesh":
             # TODO:
+            x0 = torch.nn.functional.relu(self.bn_projection(self.fc_projection(encoded_feat)))
+            x1 = torch.nn.functional.relu(self.bn1(self.fc1(x0)))
+            x2 = torch.nn.functional.relu(self.bn2(self.fc2(x1)))
+            x = torch.nn.functional.relu(self.bn3(self.fc3(x2))) + x1
+            x = torch.nn.functional.relu(self.bn4(self.fc4(x))) + x0
+            deform_vertices_pred = self.fc_final(x)
+
+            # print(deform_vertices_pred.shape)
+            # print(self.mesh_pred.verts_packed().shape)
+            # deform_vertices_pred = 
+            # print(deform_vertices_pred.shape)
+
             # deform_vertices_pred =             
-            mesh_pred = self.mesh_pred.offset_verts(deform_vertices_pred.reshape([-1,3]))
-            return  mesh_pred          
+            result = self.mesh_pred.offset_verts(deform_vertices_pred.reshape([-1, 3]))
+            return  result          
 

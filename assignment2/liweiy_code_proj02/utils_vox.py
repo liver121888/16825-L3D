@@ -1,7 +1,9 @@
 import torch
 import numpy as np
 import torch.nn.functional as F
-
+from pytorch3d.ops import cubify
+from pytorch3d.renderer import TexturesVertex
+from pytorch3d.structures import Meshes
 
 XMIN = -0.5 # right (neg is left)
 XMAX = 0.5 # right
@@ -157,3 +159,14 @@ def get_inbounds(xyz, Z, Y, X, already_mem=False):
     
     inbounds = x_valid & y_valid & z_valid
     return inbounds.bool()
+
+def vox_to_mesh(vox, color=[0.7, 0.7, 1]):
+    mesh = cubify(vox, device=vox.device, thresh=0.5)
+    vertices, faces = mesh.verts_list()[0], mesh.faces_list()[0]
+    vertices = vertices.unsqueeze(0)
+    faces = faces.unsqueeze(0)
+    textures = torch.ones_like(vertices)
+    textures = textures * torch.tensor(color).to(vox.device)
+    # print(vertices.shape, faces.shape, textures.shape)
+    mesh = Meshes(verts=vertices, faces=faces, textures=TexturesVertex(textures)).to(vox.device)
+    return mesh
