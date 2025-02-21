@@ -160,14 +160,14 @@ if main_args.q == 0 or main_args.q == 2:
     class Q2TrainArgs:
         arch="resnet18"
         lr=4e-4
-        max_iter=10000
+        max_iter=300
         # max_iter=100000
         batch_size=32
         num_workers=4
         n_points=1000
         w_chamfer=1.0
         w_smooth=0.1
-        save_freq=200
+        save_freq=100
         # save_freq=10
         load_checkpoint=False
         device="cuda"
@@ -178,7 +178,7 @@ if main_args.q == 0 or main_args.q == 2:
     class Q2EvalArgs:
         arch="resnet18"
         # vis_freq = 1000
-        vis_freq = 10
+        vis_freq = 100
         batch_size = 1
         num_workers = 4
         # ["vox", "point", "mesh"]
@@ -202,22 +202,22 @@ if main_args.q == 0 or main_args.q == 2:
     q2_eval_args = Q2EvalArgs()
 
     ### 2.1. Image to voxel grid (20 points)
-    # print("Q2 vox")
-    # train_model(q2_train_args)
-    # evaluate_model(q2_eval_args)
+    print("Q2 vox")
+    train_model(q2_train_args)
+    evaluate_model(q2_eval_args)
 
     ### 2.2. Image to point cloud (20 points)
     # print("Q2 point")
     # q2_train_args.type = "point"
     # q2_eval_args.type = "point"
     # q2_eval_args.updateOutputPath()
-    # train_model(q2_train_args)
+    # # train_model(q2_train_args)
     # evaluate_model(q2_eval_args)
 
     ### 2.3. Image to mesh (20 points)
-    print("Q2 mesh")
-    q2_train_args.type = "mesh"
-    q2_eval_args.type = "mesh"
-    q2_eval_args.updateOutputPath()
-    train_model(q2_train_args)
-    evaluate_model(q2_eval_args)
+    # print("Q2 mesh")
+    # q2_train_args.type = "mesh"
+    # q2_eval_args.type = "mesh"
+    # q2_eval_args.updateOutputPath()
+    # train_model(q2_train_args)
+    # evaluate_model(q2_eval_args)

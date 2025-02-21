@@ -50,11 +50,83 @@ Ground truth mesh
 
 
 ### 2.1. Image to voxel grid (20 points)
-2800
+
 
 ### 2.2. Image to point cloud (20 points)
 
+Sample \# 0
+
+![point_eval_0](data/point_eval_gt_image_0.png)
+
+Ground truth mesh
+
+![point_eval_0](data/point_eval_gt_0.gif)
+
+Predicted point cloud
+
+![point_eval_0](data/point_eval_0.gif)
+
+Sample \# 100
+
+![point_eval_100](data/point_eval_gt_image_100.png)
+
+Ground truth mesh
+
+![point_eval_100](data/point_eval_gt_100.gif)
+
+Predicted point cloud
+
+![point_eval_100](data/point_eval_100.gif)
+
+Sample \# 400
+
+![point_eval_400](data/point_eval_gt_image_400.png)
+
+Ground truth mesh
+
+![point_eval_400](data/point_eval_gt_400.gif)
+
+Predicted point cloud
+
+![point_eval_400](data/point_eval_400.gif)
+
 ### 2.3. Image to mesh (20 points)
+
+Sample \# 0
+
+![mesh_eval_0](data/mesh_eval_gt_image_0.png)
+
+Ground truth mesh
+
+![mesh_eval_0](data/mesh_eval_gt_0.gif)
+
+Predicted mesh
+
+![mesh_eval_0](data/mesh_eval_0.gif)
+
+Sample \# 100
+
+![mesh_eval_100](data/mesh_eval_gt_image_100.png)
+
+Ground truth mesh
+
+![mesh_eval_100](data/mesh_eval_gt_100.gif)
+
+Predicted mesh
+
+![mesh_eval_100](data/mesh_eval_100.gif)
+
+Sample \# 400
+
+![mesh_eval_400](data/mesh_eval_gt_image_400.png)
+
+Ground truth mesh
+
+![mesh_eval_400](data/mesh_eval_gt_400.gif)
+
+Predicted mesh
+
+![mesh_eval_400](data/mesh_eval_400.gif)
 
 ### 2.4. Quantitative comparisions(10 points)
 

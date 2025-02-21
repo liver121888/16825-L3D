@@ -37,12 +37,12 @@ def preprocess(feed_dict, args):
     for k in ['images']:
         feed_dict[k] = feed_dict[k].to(args.device)
 
-    images = feed_dict['images'].squeeze(1)
+    ori_images = feed_dict['images'].squeeze(1)
     mesh = feed_dict['mesh']
     if args.load_feat:
         images = torch.stack(feed_dict['feats']).to(args.device)
 
-    return images, mesh
+    return ori_images, images, mesh
 
 def save_plot(thresholds, avg_f1_score, args):
     fig = plt.figure()
@@ -163,7 +163,8 @@ def evaluate_model(args):
 
         feed_dict = next(eval_loader)
 
-        images_gt, mesh_gt = preprocess(feed_dict, args)
+        ori_images, images_gt, mesh_gt = preprocess(feed_dict, args)
+        # print(images_gt.shape)
 
         read_time = time.time() - read_start_time
 
@@ -183,8 +184,16 @@ def evaluate_model(args):
             # visualization block
 
             num_views = 36
+            dist = 3
+            if args.type == "vox":
+                dist = 3
+            elif args.type == "point":
+                dist = 2.0
+            else:
+                dist = 1.2
+                
             R, T = pytorch3d.renderer.look_at_view_transform(
-                dist=3,
+                dist=dist,
                 elev=0,
                 azim=np.linspace(-180, 180, num_views, endpoint=False),
             )
@@ -198,18 +207,12 @@ def evaluate_model(args):
             renderer = None
             data = None
             if args.type == "vox":
-                # print(predictions.shape)
                 predictions = predictions.squeeze(0)
-                # print(predictions.shape)
                 data = utils_vox.vox_to_mesh(predictions)
                 renderer = get_mesh_renderer(image_size=256)
             elif args.type == "point":
-                # print(predictions.shape)
-                # predictions = predictions.squeeze(0)
                 r = torch.ones(predictions.shape[-2:])
                 r = (r * torch.tensor([0.7, 0.7, 1])).unsqueeze(0).to(args.device)
-                # print(predictions.shape)
-                # print(r.shape)
                 data = pytorch3d.structures.Pointclouds(points=predictions, features=r).detach()
                 renderer = get_points_renderer(image_size=256)
             else:
@@ -218,7 +221,6 @@ def evaluate_model(args):
                 faces = faces.unsqueeze(0)
                 textures = torch.ones_like(vertices)
                 textures = textures * torch.tensor([0.7, 0.7, 1]).to(args.device)
-                # print(vertices.shape, faces.shape, textures.shape)
                 data = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
                 renderer = get_mesh_renderer(image_size=256)
 
@@ -226,8 +228,24 @@ def evaluate_model(args):
 
             my_images = (rend[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
             imageio.mimsave(args.output_path[:-4] + f"_{step}.gif", list(my_images), duration=1000//15, loop=0)
-            # plt.imsave(f'vis/{step}_{args.type}.png', rend)
-      
+
+            # gt
+            vertices, faces = mesh_gt.verts_list()[0], mesh_gt.faces_list()[0]
+            vertices = vertices.unsqueeze(0)
+            faces = faces.unsqueeze(0)
+            textures = torch.ones_like(vertices).to(args.device)
+            textures = textures * torch.tensor([0.7, 0.7, 1]).to(args.device)
+            data = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
+            mesh_gt = (data.extend(num_views)).to(args.device)
+            renderer_gt = get_mesh_renderer(image_size=256)
+            rend_gt = renderer_gt(mesh_gt, cameras=cameras, lights=lights)
+            my_images = (rend_gt[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+            imageio.mimsave(args.output_path[:-4] + f"_gt_{step}.gif", list(my_images), duration=1000//15, loop=0)
+
+            # gt image
+            # print(ori_images.shape)
+            plt.imsave(args.output_path[:-4] + f"_gt_image_{step}.png", ori_images.squeeze().cpu().numpy())
+ 
 
         total_time = time.time() - start_time
         iter_time = time.time() - iter_start_time
