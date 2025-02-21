@@ -152,8 +152,9 @@ def evaluate_model(args):
     if args.load_checkpoint:
         checkpoint = torch.load(f'checkpoint_{args.type}.pth')
         model.load_state_dict(checkpoint['model_state_dict'])
+        # start_iter = checkpoint["step"]
         print(f"Succesfully loaded iter {start_iter}")
-    
+
     print("Starting evaluating !")
     max_iter = len(eval_loader)
     for step in range(start_iter, max_iter):
@@ -227,6 +228,9 @@ def evaluate_model(args):
             rend = renderer(data.extend(num_views), cameras=cameras, lights=lights)
 
             my_images = (rend[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+            # for i in range(36):
+                # plt.imsave(args.output_path[:-4] + f"_{step}_{i}.png", my_images[i])
+            # plt.imsave(args.output_path[:-4] + f"_{step}.png", my_images.squeeze())
             imageio.mimsave(args.output_path[:-4] + f"_{step}.gif", list(my_images), duration=1000//15, loop=0)
 
             # gt
@@ -235,11 +239,13 @@ def evaluate_model(args):
             faces = faces.unsqueeze(0)
             textures = torch.ones_like(vertices).to(args.device)
             textures = textures * torch.tensor([0.7, 0.7, 1]).to(args.device)
-            data = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
-            mesh_gt = (data.extend(num_views)).to(args.device)
+            gt = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
+            mesh_gt = (gt.extend(num_views)).to(args.device)
             renderer_gt = get_mesh_renderer(image_size=256)
             rend_gt = renderer_gt(mesh_gt, cameras=cameras, lights=lights)
             my_images = (rend_gt[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+                        # for i in range(36):
+                # plt.imsave(args.output_path[:-4] + f"_{step}_{i}.png", my_images[i])
             imageio.mimsave(args.output_path[:-4] + f"_gt_{step}.gif", list(my_images), duration=1000//15, loop=0)
 
             # gt image

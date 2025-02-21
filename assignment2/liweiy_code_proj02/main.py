@@ -148,10 +148,8 @@ if main_args.q == 0 or main_args.q == 1:
     textures = textures * torch.tensor([0.7, 0.7, 1]).to(q1_args.device)
     # print(vertices.shape, faces.shape, textures.shape)
     mesh_src = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
-
     render_3d(mesh_tgt, True, output_prefix + 'mesh_fit_tgt.gif', q1_args, dist=1.2)
     render_3d(mesh_src, True, output_prefix + 'mesh_fit_src.gif', q1_args, dist=1.2)
-
 
 ## 2. Reconstructing 3D from single view
 
@@ -164,26 +162,29 @@ if main_args.q == 0 or main_args.q == 2:
         # max_iter=100000
         batch_size=32
         num_workers=4
-        n_points=1000
+        n_points=1500
         w_chamfer=1.0
         w_smooth=0.1
-        save_freq=200
+        save_freq=100
         # save_freq=10
         load_checkpoint=False
         device="cuda"
         load_feat=True
         # ["vox", "point", "mesh"]
         type="vox"
+        output_path = output_prefix + type + "_train/" + type + '_train.gif'
+        def updateOutputPath(self):
+            self.output_path = output_prefix + self.type + "_train/" + self.type + '_train.gif'
 
     class Q2EvalArgs:
         arch="resnet18"
         # vis_freq = 1000
-        vis_freq = 10
+        vis_freq = 100
         batch_size = 1
-        num_workers = 4
+        num_workers = 1
         # ["vox", "point", "mesh"]
         type = "vox"
-        n_points=1000
+        n_points=1500
         w_chamfer=1.0
         w_smooth=0.1
         load_checkpoint = True
@@ -202,9 +203,9 @@ if main_args.q == 0 or main_args.q == 2:
     q2_eval_args = Q2EvalArgs()
 
     ### 2.1. Image to voxel grid (20 points)
-    # print("Q2 vox")
-    # train_model(q2_train_args)
-    # evaluate_model(q2_eval_args)
+    print("Q2 vox")
+    train_model(q2_train_args)
+    evaluate_model(q2_eval_args)
 
     ### 2.2. Image to point cloud (20 points)
     print("Q2 point")
@@ -215,15 +216,17 @@ if main_args.q == 0 or main_args.q == 2:
     evaluate_model(q2_eval_args)
 
     ### 2.3. Image to mesh (20 points)
-    # print("Q2 mesh")
-    # q2_train_args.type = "mesh"
-    # q2_eval_args.type = "mesh"
-    # q2_eval_args.updateOutputPath()
-    # train_model(q2_train_args)
+    print("Q2 mesh")
+    q2_train_args.type = "mesh"
+    q2_eval_args.type = "mesh"
+    q2_train_args.updateOutputPath()
+    q2_eval_args.updateOutputPath()
+    train_model(q2_train_args)
     # evaluate_model(q2_eval_args)
 
 
-    ## 3. Exploring other architectures / datasets. (Choose at least one! More than one is extra credit)
+## 3. Exploring other architectures / datasets. (Choose at least one! More than one is extra credit)
+# remember to set to use full dataset
 if main_args.q == 0 or main_args.q == 3:
     class Q3TrainArgs:
         arch="resnet18"
@@ -257,10 +260,9 @@ if main_args.q == 0 or main_args.q == 3:
         load_feat = True
         output_path = output_prefix + type + "_eval_full/" + type + '_eval.gif'
 
-
     ### 3.3 Extended dataset for training (10 points)
     print("Q3 point full")
     q3_train_args = Q3TrainArgs()
     q3_eval_args = Q3EvalArgs()
     train_model(q3_train_args)
-    # evaluate_model(q3_eval_args)
+    evaluate_model(q3_eval_args)

@@ -125,6 +125,35 @@ def train_model(args):
 
         prediction_3d = model(images_gt, args)
 
+        if args.type == "mesh" and  step % 50 == 0:
+            print("visualizing")
+            num_views = 36
+            R, T = pytorch3d.renderer.look_at_view_transform(
+                dist=1.2,
+                elev=0,
+                azim=np.linspace(-180, 180, num_views, endpoint=False),
+            )
+            cameras = pytorch3d.renderer.FoVPerspectiveCameras(
+                R=R,
+                T=T,
+                device=args.device
+            )
+            lights = pytorch3d.renderer.PointLights(location=[[0, 0.0, -3.0]], device=args.device,)
+            vertices, faces = prediction_3d.verts_list()[0], prediction_3d.faces_list()[0]
+            vertices = vertices.unsqueeze(0)
+            faces = faces.unsqueeze(0)
+            textures = torch.ones_like(vertices)
+            textures = textures * torch.tensor([0.7, 0.7, 1]).to(args.device)
+            data = pytorch3d.structures.Meshes(verts=vertices, faces=faces, textures=pytorch3d.renderer.TexturesVertex(textures)).detach()
+            renderer = get_mesh_renderer(image_size=256)
+            rend = renderer(data.extend(num_views), cameras=cameras, lights=lights)
+            my_images = (rend[:, ..., :3].cpu().numpy() * 255).clip(0, 255).astype(np.uint8)
+            # for i in range(36):
+                # plt.imsave(args.output_path[:-4] + f"_{step}_{i}.png", my_images[i])
+            # plt.imsave(args.output_path[:-4] + f"_{step}.png", my_images.squeeze())
+            imageio.mimsave(args.output_path[:-4] + f"train_{step}.gif", list(my_images), duration=1000//15, loop=0)
+
+
         loss = calculate_loss(prediction_3d, ground_truth_3d, args)
 
         optimizer.zero_grad()

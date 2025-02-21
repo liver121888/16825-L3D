@@ -17,7 +17,7 @@ class View(nn.Module):
         return x.view(-1, *self.shape)
 
 
-# ref: mingfenl
+# ref: mingfenl, sheldonl
 class SingleViewto3D(nn.Module):
     def __init__(self, args):
         super(SingleViewto3D, self).__init__()
