@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Assignment 2</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="assignment-2">Assignment 2</h1>
+<p>Liwei Yang, <a href="mailto:liweiy@andrew.cmu.edu">liweiy@andrew.cmu.edu</a></p>
+<ul>
+<li><a href="#assignment-2">Assignment 2</a>
+<ul>
+<li><a href="#1-exploring-loss-functions">1. Exploring loss functions</a>
+<ul>
+<li><a href="#11-fitting-a-voxel-grid-5-points">1.1. Fitting a voxel grid (5 points)</a></li>
+<li><a href="#12-fitting-a-point-cloud-5-points">1.2. Fitting a point cloud (5 points)</a></li>
+<li><a href="#13-fitting-a-mesh-5-points">1.3. Fitting a mesh (5 points)</a></li>
+</ul>
+</li>
+<li><a href="#2-reconstructing-3d-from-single-view">2. Reconstructing 3D from single view</a>
+<ul>
+<li><a href="#21-image-to-voxel-grid-20-points">2.1. Image to voxel grid (20 points)</a></li>
+<li><a href="#22-image-to-point-cloud-20-points">2.2. Image to point cloud (20 points)</a></li>
+<li><a href="#23-image-to-mesh-20-points">2.3. Image to mesh (20 points)</a></li>
+<li><a href="#24-quantitative-comparisions10-points">2.4. Quantitative comparisions(10 points)</a></li>
+<li><a href="#25-analyse-effects-of-hyperparams-variations-10-points">2.5. Analyse effects of hyperparams variations (10 points)</a></li>
+<li><a href="#26-interpret-your-model-15-points">2.6. Interpret your model (15 points)</a></li>
+</ul>
+</li>
+<li><a href="#3-exploring-other-architectures--datasets">3. Exploring other architectures / datasets.</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="1-exploring-loss-functions">1. Exploring loss functions</h2>
+<h3 id="11-fitting-a-voxel-grid-5-points">1.1. Fitting a voxel grid (5 points)</h3>
+<p>Optimized voxel grid</p>
+<p><img src="data/voxel_fit_src.gif" alt="voxel_fit_src"></p>
+<p>Ground truth voxel grid</p>
+<p><img src="data/voxel_fit_tgt.gif" alt="voxel_fit_tgt"></p>
+<h3 id="12-fitting-a-point-cloud-5-points">1.2. Fitting a point cloud (5 points)</h3>
+<p>Optimized point cloud</p>
+<p><img src="data/point_cloud_fit_src.gif" alt="point_cloud_fit_src"></p>
+<p>Ground truth point cloud</p>
+<p><img src="data/point_cloud_fit_tgt.gif" alt="point_cloud_fit_tgt"></p>
+<h3 id="13-fitting-a-mesh-5-points">1.3. Fitting a mesh (5 points)</h3>
+<p>Optimized mesh</p>
+<p><img src="data/mesh_fit_src.gif" alt="mesh_fit_src"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/mesh_fit_tgt.gif" alt="mesh_fit_tgt"></p>
+<h2 id="2-reconstructing-3d-from-single-view">2. Reconstructing 3D from single view</h2>
+<h3 id="21-image-to-voxel-grid-20-points">2.1. Image to voxel grid (20 points)</h3>
+<p>Sample # 0</p>
+<p><img src="data/vox_eval_gt_image_0.png" alt="vox_eval_0"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/vox_eval_gt_0.gif" alt="vox_eval_0"></p>
+<p>Predicted vox</p>
+<p><img src="data/vox_eval_0.gif" alt="vox_eval_0"></p>
+<p>Sample # 100</p>
+<p><img src="data/vox_eval_gt_image_100.png" alt="vox_eval_100"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/vox_eval_gt_100.gif" alt="vox_eval_100"></p>
+<p>Predicted vox</p>
+<p><img src="data/vox_eval_100.gif" alt="vox_eval_100"></p>
+<p>Sample # 400</p>
+<p><img src="data/vox_eval_gt_image_400.png" alt="vox_eval_400"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/vox_eval_gt_400.gif" alt="vox_eval_400"></p>
+<p>Predicted vox</p>
+<p><img src="data/vox_eval_400.gif" alt="vox_eval_400"></p>
+<h3 id="22-image-to-point-cloud-20-points">2.2. Image to point cloud (20 points)</h3>
+<p>Sample # 0</p>
+<p><img src="data/point_eval_gt_image_0.png" alt="point_eval_0"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/point_eval_gt_0.gif" alt="point_eval_0"></p>
+<p>Predicted point cloud</p>
+<p><img src="data/point_eval_0.gif" alt="point_eval_0"></p>
+<p>Sample # 100</p>
+<p><img src="data/point_eval_gt_image_100.png" alt="point_eval_100"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/point_eval_gt_100.gif" alt="point_eval_100"></p>
+<p>Predicted point cloud</p>
+<p><img src="data/point_eval_100.gif" alt="point_eval_100"></p>
+<p>Sample # 400</p>
+<p><img src="data/point_eval_gt_image_400.png" alt="point_eval_400"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/point_eval_gt_400.gif" alt="point_eval_400"></p>
+<p>Predicted point cloud</p>
+<p><img src="data/point_eval_400.gif" alt="point_eval_400"></p>
+<h3 id="23-image-to-mesh-20-points">2.3. Image to mesh (20 points)</h3>
+<p>Sample # 0</p>
+<p><img src="data/mesh_eval_gt_image_0.png" alt="mesh_eval_0"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/mesh_eval_gt_0.gif" alt="mesh_eval_0"></p>
+<p>Predicted mesh</p>
+<p><img src="data/mesh_eval_0.gif" alt="mesh_eval_0"></p>
+<p>Sample # 100</p>
+<p><img src="data/mesh_eval_gt_image_100.png" alt="mesh_eval_100"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/mesh_eval_gt_100.gif" alt="mesh_eval_100"></p>
+<p>Predicted mesh</p>
+<p><img src="data/mesh_eval_100.gif" alt="mesh_eval_100"></p>
+<p>Sample # 400</p>
+<p><img src="data/mesh_eval_gt_image_400.png" alt="mesh_eval_400"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/mesh_eval_gt_400.gif" alt="mesh_eval_400"></p>
+<p>Predicted mesh</p>
+<p><img src="data/mesh_eval_400.gif" alt="mesh_eval_400"></p>
+<h3 id="24-quantitative-comparisions10-points">2.4. Quantitative comparisions(10 points)</h3>
+<p>Voxel evaluation</p>
+<p><img src="data/eval_vox.png" alt="eval_vox"></p>
+<p>Point cloud evaluation</p>
+<p><img src="data/eval_point.png" alt="eval_point"></p>
+<p>Mesh evaluation</p>
+<p><img src="data/eval_mesh.png" alt="eval_mesh"></p>
+<p>From the result, we can see point cloud model achieve the best F1 score, and voxel model has the worst performance.</p>
+<p>One reasone behind this might be some of the chair legs, or other thin features are too small to occupy one voxel. thus from sample #400 we can see the chair is missing the legs. For mesh model, the data structure is in natrual more complex than point cloud, thus the thin legs are also often only represented by a thin face. Point cloud model benefits from the simple data structure and thus has the best performace in terms of F1 score.</p>
+<h3 id="25-analyse-effects-of-hyperparams-variations-10-points">2.5. Analyse effects of hyperparams variations (10 points)</h3>
+<p>I change the n_points of point cloud model to 1500 points. The evaluation result is as below:</p>
+<p><img src="data/eval_point_1500.png" alt="eval_point_1500"></p>
+<p>Sample # 400</p>
+<p><img src="data/mesh_eval_gt_image_400.png" alt="mesh_eval_400"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/mesh_eval_gt_400.gif" alt="mesh_eval_400"></p>
+<p>1000 points</p>
+<p><img src="data/point_eval_400.gif" alt="point_eval_400"></p>
+<p>1500 points</p>
+<p><img src="data/point_eval_400_1500.gif" alt="point_eval_400_1500"></p>
+<p>We can see the back panel becomes denser and represent the mesh ground truth better. The F1 score is also generally higher when compare to the same threshold of 1000 points. Adding more points should amplify this difference more.</p>
+<h3 id="26-interpret-your-model-15-points">2.6. Interpret your model (15 points)</h3>
+<p>I visulize the training process of mesh model</p>
+<p>iter 0</p>
+<p><img src="data/mesh_traintrain_0.gif" alt="mesh_traintrain_0"></p>
+<p>iter 50</p>
+<p><img src="data/mesh_traintrain_50.gif" alt="mesh_traintrain_50"></p>
+<p>iter 150</p>
+<p><img src="data/mesh_traintrain_150.gif" alt="mesh_traintrain_150"></p>
+<p>iter 250</p>
+<p><img src="data/mesh_traintrain_250.gif" alt="mesh_traintrain_250"></p>
+<p>From iter 0, we can see the isosphere is still big and the cameras are within the isosphere. As we train more iters, the mesh gradually forms a general chair sturcture.</p>
+<h2 id="3-exploring-other-architectures--datasets">3. Exploring other architectures / datasets.</h2>
+<p><img src="data/eval_point_full.png" alt="eval_point_full"></p>
+<p>Sample #40</p>
+<p><img src="data/point_eval_f_gt_image_40.png" alt="point_eval_f_gt_40"></p>
+<p>Model prediction</p>
+<p><img src="data/40_eval.gif" alt="40"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/40_gt_eval.gif" alt="point_eval_f_gt_40"></p>
+<p>Sample #460</p>
+<p><img src="data/point_eval_f_gt_image_460.png" alt="point_eval_f_gt_460"></p>
+<p>Model prediction</p>
+<p><img src="data/460_eval.gif" alt="460"></p>
+<p>Ground truth mesh</p>
+<p><img src="data/460_gt_eval.gif" alt="point_eval_f_gt_460"></p>
+<p>Sample #1450</p>
+<p><img src="data/point_eval_f_gt_image_1450.png" alt="point_eval_f_gt_1450"></p>
+<p>Model prediction</p>
+<p><img src="data/1450_eval.gif" alt="1450"></p>
+<p>Training on one class provides more steady result. The reason might be Training on three classes cause confusion to the model. The chair prediction gets worse. The F1 score across 3 dataset is roughly the same as the F1 socre on chair dataset.</p>
+
+            
+            
+        </body>
+        </html>
