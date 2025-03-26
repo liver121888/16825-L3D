@@ -15,7 +15,17 @@ def make_trainable(gaussians):
 
     ### YOUR CODE HERE ###
     # HINT: You can access and modify parameters from gaussians
-    pass
+    # pass
+    if not gaussians.is_isotropic:
+        gaussians.pre_act_quats.requires_grad = True
+    # if gaussians.use_spherical_harmonics:
+    #     gaussians.spherical_harmonics.requires_grad = True
+    
+    gaussians.means.requires_grad = True
+    gaussians.pre_act_scales.requires_grad = True
+    gaussians.pre_act_opacities.requires_grad = True
+    gaussians.colours.requires_grad = True
+
 
 def setup_optimizer(gaussians):
 
@@ -28,13 +38,13 @@ def setup_optimizer(gaussians):
     # fast with the default settings.
     # HINT: Consider setting different learning rates for different sets of parameters.
     parameters = [
-        {'params': [gaussians.pre_act_opacities], 'lr': 0.05, "name": "opacities"},
-        {'params': [gaussians.pre_act_scales], 'lr': 0.05, "name": "scales"},
-        {'params': [gaussians.colours], 'lr': 0.05, "name": "colours"},
-        {'params': [gaussians.means], 'lr': 0.05, "name": "means"},
+        {'params': [gaussians.pre_act_opacities], 'lr': 5e-2, "name": "opacities"},
+        {'params': [gaussians.pre_act_scales], 'lr': 5e-3, "name": "scales"},
+        {'params': [gaussians.colours], 'lr': 2e-2, "name": "colours"},
+        {'params': [gaussians.means], 'lr': 5e-4, "name": "means"},
     ]
     optimizer = torch.optim.Adam(parameters, lr=0.0, eps=1e-15)
-    optimizer = None
+    # optimizer = None
 
     return optimizer
 
@@ -104,12 +114,14 @@ def run_training(args):
         # HINT: Get img_size from train_dataset
         # HINT: Get per_splat from args.gaussians_per_splat
         # HINT: camera is available above
-        pred_img = None
+        pred_img, depth, mask = scene.render(camera, bg_colour=(0.0, 0.0, 0.0), img_size=train_dataset.img_size, per_splat=args.gaussians_per_splat)
 
         # Compute loss
         ### YOUR CODE HERE ###
         # HINT: A simple standard loss function should work.
-        loss = None
+        # print(pred_img.shape, gt_img.shape)
+        loss_fn = torch.nn.L1Loss()
+        loss = loss_fn(pred_img, gt_img)
 
         loss.backward()
         optimizer.step()
@@ -151,7 +163,7 @@ def run_training(args):
             # HINT: Get img_size from train_dataset
             # HINT: Get per_splat from args.gaussians_per_splat
             # HINT: camera is available above
-            pred_img = None
+            pred_img, depth, mask = scene.render(camera, bg_colour=(0.0, 0.0, 0.0), img_size=train_dataset.img_size, per_splat=args.gaussians_per_splat)
 
         pred_npy = pred_img.detach().cpu().numpy()
         pred_npy = (np.clip(pred_npy, 0.0, 1.0) * 255.0).astype(np.uint8)
@@ -179,7 +191,7 @@ def run_training(args):
             # HINT: Get img_size from test_dataset
             # HINT: Get per_splat from args.gaussians_per_splat
             # HINT: camera is available above
-            pred_img = None
+            pred_img, depth, mask = scene.render(camera, bg_colour=(0.0, 0.0, 0.0), img_size=test_dataset.img_size, per_splat=args.gaussians_per_splat)
 
             gt_npy = gt_img.detach().cpu().numpy()
             pred_npy = pred_img.detach().cpu().numpy()
@@ -206,7 +218,7 @@ def get_args():
         help="Path to the dataset."
     )
     parser.add_argument(
-        "--gaussians_per_splat", default=-1, type=int,
+        "--gaussians_per_splat", default=60, type=int,
         help=(
             "Number of gaussians to splat in one function call. If set to -1, "
             "then all gaussians in the scene are splat in a single function call. "
@@ -218,7 +230,7 @@ def get_args():
         )
     )
     parser.add_argument(
-        "--num_itrs", default=1000, type=int,
+        "--num_itrs", default=500, type=int,
         help="Number of iterations to train the model."
     )
     parser.add_argument(

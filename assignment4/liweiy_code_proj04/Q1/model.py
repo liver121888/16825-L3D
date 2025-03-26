@@ -326,7 +326,7 @@ class Gaussians:
         ### YOUR CODE HERE ###
         # HINT: Do note that means_2D have units of pixels. Hence, you must apply a
         # transformation that moves points in the world space to screen space.
-        print("means_3D: ", means_3D.shape)
+        # print("means_3D: ", means_3D.shape)
         means_2D = camera.transform_points_screen(means_3D)[:, :2]  # (N, 2)
         torch.Size([2048, 2, 3])
         return means_2D
@@ -457,13 +457,13 @@ class Scene:
         
         # filter z_vals
         
-        print("z_vals.shape: ", z_vals.shape)
+        # print("z_vals.shape: ", z_vals.shape)
         filtered_idx = torch.where(z_vals >= 0)
         # filter z_valsm
         z_vals = z_vals[filtered_idx]
         idxs = torch.argsort(z_vals)  # (N,)
 
-        print("idxs.shape", idxs.shape)
+        # print("idxs.shape", idxs.shape)
 
         return idxs
 
@@ -503,9 +503,9 @@ class Scene:
 
         ### YOUR CODE HERE ###
         # HINT: Can you find a function in this file that can help?
-        print("points_2D.shape: ", points_2D.shape)
-        print("means_2D.shape: ", means_2D.shape)
-        print("cov_2D_inverse.shape: ", cov_2D_inverse.shape)
+        # print("points_2D.shape: ", points_2D.shape)
+        # print("means_2D.shape: ", means_2D.shape)
+        # print("cov_2D_inverse.shape: ", cov_2D_inverse.shape)
         # points_2D.shape:  torch.Size([1, 65536, 2])
         # means_2D.shape:  torch.Size([2048, 1, 2, 3])
         # cov_2D_inverse.shape:  torch.Size([2048, 2, 2])
@@ -517,7 +517,11 @@ class Scene:
         ### YOUR CODE HERE ###
         # HINT: Refer to README for a relevant equation.
 
-        alphas = opacities * exp_power  # (N, H*W)
+        # (2048) , (65536)
+        # print("opacities.shape: ", opacities.shape)
+        # print("exp_power.shape: ", exp_power.shape)
+
+        alphas = opacities.unsqueeze(-1) * exp_power  # (N, H*W)
         alphas = torch.reshape(alphas, (-1, H, W))  # (N, H, W)
 
         # Post processing for numerical stability
