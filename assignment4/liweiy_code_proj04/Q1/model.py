@@ -328,7 +328,7 @@ class Gaussians:
         # transformation that moves points in the world space to screen space.
         # print("means_3D: ", means_3D.shape)
         means_2D = camera.transform_points_screen(means_3D)[:, :2]  # (N, 2)
-        torch.Size([2048, 2, 3])
+        # torch.Size([2048, 2, 3])
         return means_2D
 
     @staticmethod
@@ -377,21 +377,31 @@ class Gaussians:
         ### YOUR CODE HERE ###
         # HINT: Refer to README for a relevant equation
 
-        # print(points_2D.shape)
-        tmp = points_2D - means_2D # (N, H*W, 2)
-        tmp = tmp.unsqueeze(2) # (N, H*W, 1, 2)
-        # print(tmp.shape)
+        # # print(points_2D.shape)
+        # tmp = points_2D - means_2D # (N, H*W, 2)
+        # tmp = tmp.unsqueeze(2) # (N, H*W, 1, 2)
+        # # print(tmp.shape)
 
-        cov_2D_inverse = cov_2D_inverse.unsqueeze(1).repeat(1, points_2D.shape[1], 1, 1)
+        # cov_2D_inverse = cov_2D_inverse.unsqueeze(1).expand(-1, points_2D.shape[1], -1, -1)
 
-        # (N, H*W, 1, 2) @ (N, H*W, 2, 2) @ (N, H*W, 2, 1) -> (N, H*W, 1, 1)
+        # # (N, H*W, 1, 2) @ (N, H*W, 2, 2) @ (N, H*W, 2, 1) -> (N, H*W, 1, 1)
 
-        # power = -1/2 * tmp @ cov_2D_inverse.unsqueeze(1) @ torch.transpose(tmp, -1, -2)
-        # torch.Size([5, 3, 2, 2])
-        power = -1/2 * tmp @ cov_2D_inverse @ torch.transpose(tmp, -1, -2)
-        # print(power.shape)
+        # # power = -1/2 * tmp @ cov_2D_inverse.unsqueeze(1) @ torch.transpose(tmp, -1, -2)
+        # # torch.Size([5, 3, 2, 2])
+        # power = -1/2 * tmp @ cov_2D_inverse @ torch.transpose(tmp, -1, -2)
+        # # print(power.shape)
 
-        return power.squeeze(-1).squeeze(-1)  # (N, H*W)
+        # return power.squeeze(-1).squeeze(-1)  # (N, H*W)
+
+        # x = points_2D - means_2D # (N, H*W, 2)
+        # power = - 0.5 * x @ cov_2D_inverse * x # (N, H*W)
+        # return power.sum(-1)
+
+        x = points_2D - means_2D  # (N, H*W, 2)
+        # Mahalanobis distance: x^T @ cov_inv @ x for each point
+        power = -0.5 * torch.einsum('npi,nij,npj->np', x, cov_2D_inverse, x)  # (N, H*W)
+        return power    
+
 
     @staticmethod
     def apply_activations(pre_act_quats, pre_act_scales, pre_act_opacities):

@@ -3,6 +3,7 @@ import torch
 import imageio
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 
 from PIL import Image
 from tqdm import tqdm
@@ -69,6 +70,9 @@ def run_training(args):
 
     # Preparing some code for visualization
     viz_gif_path_1 = os.path.join(args.out_path, "q1_training_progress.gif")
+    viz_progress_path = os.path.join(args.out_path, "q1_training_progress")
+    if not os.path.exists(viz_progress_path):
+        os.makedirs(viz_progress_path, exist_ok=True)
     viz_gif_path_2 = os.path.join(args.out_path, "q1_training_final_renders.gif")
     viz_idxs = np.linspace(0, len(train_dataset)-1, 5).astype(np.int32)[:4]
 
@@ -135,8 +139,10 @@ def run_training(args):
                 viz_cameras, train_dataset.img_size
             )
             viz_frames.append(viz_frame)
+            plt.imsave(os.path.join(viz_progress_path, f"q1_training_{itr:07d}.png"), viz_frame)
 
     print("[*] Training Completed.")
+    
 
     # Saving training progess GIF
     imageio.mimwrite(viz_gif_path_1, viz_frames, loop=0, duration=(1/10.0)*1000)
@@ -218,7 +224,7 @@ def get_args():
         help="Path to the dataset."
     )
     parser.add_argument(
-        "--gaussians_per_splat", default=60, type=int,
+        "--gaussians_per_splat", default=1024, type=int,
         help=(
             "Number of gaussians to splat in one function call. If set to -1, "
             "then all gaussians in the scene are splat in a single function call. "

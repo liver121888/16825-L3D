@@ -121,6 +121,7 @@ def visualize_renders(scene, gt_viz_img, cameras, img_size):
     viz_size = (256, 256)
     with torch.no_grad():
         for cam in cameras:
+            # torch.cuda.empty_cache()
             pred_img, _, _ = scene.render(
                 cam, img_size=img_size,
                 bg_colour=(0.0, 0.0, 0.0),
