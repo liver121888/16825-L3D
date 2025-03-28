@@ -122,7 +122,7 @@ Do note that while the reference we have provided is a still frame, we expect yo
 
 **GPU Memory Usage**: This task (with default paramter settings) may use approximately 6GB GPU memory. You can decrease/increase GPU memory utilization for performance by using the `--gaussians_per_splat` argument.
 
-> **Submission:** In your webpage, attach the **GIF** that you obtained by running `render.py`
+> **Submission** In your webpage, attach the **GIF** that you obtained by running `render.py`
 
 ## 1.2 Training 3D Gaussian Representations (15 points)
 
@@ -166,7 +166,7 @@ Feel free to experiment with different learning rate values and number of iterat
 
 **GPU Memory Usage**: This task (with default paramter settings) may use approximately 15.5GB GPU memory. You can decrease/increase GPU memory utilization for performance by using the `--gaussians_per_splat` argument.
 
-> **Submission:** In your webpage, include the following details:
+> **Submission** In your webpage, include the following details:
 > - Learning rates that you used for each parameter. If you had experimented with multiple sets of learning rates, just mention the set that obtains the best performance in the next question.
 > - Number of iterations that you trained the model for.
 > - The PSNR and SSIM.
@@ -200,7 +200,7 @@ For comparison, here is one frame of the rendering obtained when we used only th
   <img src="ref_output/q1_without_sh.png" alt="Q1_Without_SH" width=60%/>
 </p>
 
-> **Submission:** In your webpage, include the following details:
+> **Submission** In your webpage, include the following details:
 > - Attach the GIF you obtained using `render.py` for questions 1.3.1 (this question) and 1.1.5 (older question).
 > - Attach 2 or 3 side by side RGB image comparisons of the renderings obtained from both the cases. The images that are being compared should correspond to the same view/frame.
 > - For each of the side by side comparisons that are attached, provide some explanation of differences (if any) that you notice.
@@ -223,7 +223,7 @@ Here are a few possible ideas to try and improve performance:
 - You can experiment with the initialization parameters in the `Gaussians` class.
 - You can experiment with using anisotropic Gaussians instead of isotropic Gaussians. 
 
-> **Submission:** In your webpage, include the following details:
+> **Submission** In your webpage, include the following details:
 > - Follow the submission instructions for question 1.2.2 for this question as well.
 > - As a baseline, use the training setup that you used for question 1.2.2 (isotropic Gaussians, learning rates, loss etc.) for this dataset (make sure `Gaussians` have `init_type="random"`). Save the training progress GIF and PSNR, SSIM metrics.
 > - Compare the training progress GIFs and PSNR, SSIM metrics for both the baseline and your improved approach on this new dataset.
@@ -281,7 +281,7 @@ In this section, you are going to optimize the texture map of a mesh with fixed 
 
 We provide a cow mesh in the `data` folder. You will load it and re-texture it given different text prompts.
 
-In `Q22_nerf_optimization.py`, we provide a skeleton code. The texture map is represented by a ColorField, similar to the NeRF architecture you have learned before. It takes in the 3D coordinate of vertices (1, N_v, 3) and output per vertex color (1, N_v, 3). The mesh will then take the output of the ColorField as its texture map.
+In `Q22_mesh_optimization.py`, we provide a skeleton code. The texture map is represented by a ColorField, similar to the NeRF architecture you have learned before. It takes in the 3D coordinate of vertices (1, N_v, 3) and output per vertex color (1, N_v, 3). The mesh will then take the output of the ColorField as its texture map.
 ```
 color_field = ColorField().to(device)  # input (1, N_v, xyz) -> output (1, N_v, rgb)
 mesh = pytorch3d.structures.Meshes(

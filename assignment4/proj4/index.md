@@ -1,146 +1,167 @@
-# Assignment 3
+# Assignment 4
 
 Liwei Yang, liweiy@andrew.cmu.edu
 
 Collaborators: fuchengp, jiamuz, jinkaiq
 
-- [Assignment 3](#assignment-3)
-- [A. Neural Volume Rendering (80 points)](#a-neural-volume-rendering-80-points)
-  - [0. Transmittance Calculation (10 points)](#0-transmittance-calculation-10-points)
-  - [1. Differentiable Volume Rendering](#1-differentiable-volume-rendering)
-    - [1.1. Familiarize yourself with the code structure](#11-familiarize-yourself-with-the-code-structure)
-    - [1.2. Outline of tasks](#12-outline-of-tasks)
-    - [1.3. Ray sampling (5 points)](#13-ray-sampling-5-points)
-    - [1.4. Point sampling (5 points)](#14-point-sampling-5-points)
-    - [1.5. Volume rendering (20 points)](#15-volume-rendering-20-points)
-  - [2. Optimizing a basic implicit volume](#2-optimizing-a-basic-implicit-volume)
-    - [2.1. Random ray sampling (5 points)](#21-random-ray-sampling-5-points)
-    - [2.2. Loss and training (5 points)](#22-loss-and-training-5-points)
-    - [2.3. Visualization](#23-visualization)
-  - [3. Optimizing a Neural Radiance Field (NeRF) (20 points)](#3-optimizing-a-neural-radiance-field-nerf-20-points)
-  - [4. NeRF Extras (CHOOSE ONE! More than one is extra credit)](#4-nerf-extras-choose-one-more-than-one-is-extra-credit)
-    - [4.1 View Dependence (10 points)](#41-view-dependence-10-points)
-    - [4.2 Coarse/Fine Sampling (10 points)](#42-coarsefine-sampling-10-points)
-- [B. Neural Surface Rendering (50 points)](#b-neural-surface-rendering-50-points)
-  - [5. Sphere Tracing (10 points)](#5-sphere-tracing-10-points)
-  - [6. Optimizing a Neural SDF (15 points)](#6-optimizing-a-neural-sdf-15-points)
-  - [7. VolSDF (15 points)](#7-volsdf-15-points)
-  - [8. Neural Surface Extras (CHOOSE ONE! More than one is extra credit)](#8-neural-surface-extras-choose-one-more-than-one-is-extra-credit)
-    - [8.1. Render a Large Scene with Sphere Tracing (10 points)](#81-render-a-large-scene-with-sphere-tracing-10-points)
-    - [8.2 Fewer Training Views (10 points)](#82-fewer-training-views-10-points)
-    - [8.3 Alternate SDF to Density Conversions (10 points)](#83-alternate-sdf-to-density-conversions-10-points)
+- [Assignment 4](#assignment-4)
+- [0. Environment Setup](#0-environment-setup)
+- [1. 3D Gaussian Splatting](#1-3d-gaussian-splatting)
+  - [1.1 3D Gaussian Rasterization (35 points)](#11-3d-gaussian-rasterization-35-points)
+    - [1.1.1 Project 3D Gaussians to Obtain 2D Gaussians](#111-project-3d-gaussians-to-obtain-2d-gaussians)
+    - [1.1.3 Filter and Sort Gaussians](#113-filter-and-sort-gaussians)
+    - [1.1.4 Compute Alphas and Transmittance](#114-compute-alphas-and-transmittance)
+    - [1.1.5 Perform Splatting](#115-perform-splatting)
+  - [1.2 Training 3D Gaussian Representations (15 points)](#12-training-3d-gaussian-representations-15-points)
+    - [1.2.1 Setting Up Parameters and Optimizer](#121-setting-up-parameters-and-optimizer)
+    - [1.2.2 Perform Forward Pass and Compute Loss](#122-perform-forward-pass-and-compute-loss)
+  - [1.3 Extensions **(Choose at least one! More than one is extra credit)**](#13-extensions-choose-at-least-one-more-than-one-is-extra-credit)
+    - [1.3.1 Rendering Using Spherical Harmonics (10 Points)](#131-rendering-using-spherical-harmonics-10-points)
+    - [1.3.2 Training On a Harder Scene (10 Points)](#132-training-on-a-harder-scene-10-points)
+- [2. Diffusion-guided Optimization](#2-diffusion-guided-optimization)
+  - [2.1 SDS Loss + Image Optimization (20 points)](#21-sds-loss--image-optimization-20-points)
+  - [2.2 Texture Map Optimization for Mesh (15 points)](#22-texture-map-optimization-for-mesh-15-points)
+  - [2.3 NeRF Optimization (15 points)](#23-nerf-optimization-15-points)
+  - [2.4 Extensions (Choose at least one! More than one is extra credit)](#24-extensions-choose-at-least-one-more-than-one-is-extra-credit)
+    - [2.4.1 View-dependent text embedding (10 points)](#241-view-dependent-text-embedding-10-points)
+    - [2.4.2 Other 3D representation (10 points)](#242-other-3d-representation-10-points)
+    - [2.4.3 Variation of implementation of SDS loss (10 points)](#243-variation-of-implementation-of-sds-loss-10-points)
 
-# A. Neural Volume Rendering (80 points)
+# 0. Environment Setup
 
-## 0. Transmittance Calculation (10 points)
+# 1. 3D Gaussian Splatting
 
-![t_cal](data/t_cal.png)
+## 1.1 3D Gaussian Rasterization (35 points)
 
-##  1. Differentiable Volume Rendering
+### 1.1.1 Project 3D Gaussians to Obtain 2D Gaussians
 
-###  1.1. Familiarize yourself with the code structure
+### 1.1.3 Filter and Sort Gaussians
 
-###  1.2. Outline of tasks
+### 1.1.4 Compute Alphas and Transmittance
 
-###  1.3. Ray sampling (5 points)
+### 1.1.5 Perform Splatting
 
-![Grid](data/xy_grid_0.png) ![Rays](data/rays_0.png)
+![q1_render](data/q1_render.gif)
 
-###  1.4. Point sampling (5 points)
+## 1.2 Training 3D Gaussian Representations (15 points)
 
-![Points](data/sample_points_0.png)
+### 1.2.1 Setting Up Parameters and Optimizer
 
-###  1.5. Volume rendering (20 points)
+### 1.2.2 Perform Forward Pass and Compute Loss
 
-![part_1](data/part_1.gif) ![depth](data/depth_2.png)
+**Training progress**
 
+![q1_training_progress](data/q1_training_progress.gif)
 
-##  2. Optimizing a basic implicit volume
+**Final rendered views**
 
-###  2.1. Random ray sampling (5 points)
+![q1_training_final_renders](data/q1_training_final_renders.gif)
 
-###  2.2. Loss and training (5 points)
+- Opacities learning rate: 0.05
+- Scales learning rate: 0.005
+- Colours learning rate: 0.02
+- Means learning rate: 0.0005
+- Number of iterations: 500
+- Mean PSNR: 28.614
+- Mean SSIM: 0.931
 
-rounded to 2 deciamls
+## 1.3 Extensions **(Choose at least one! More than one is extra credit)**
 
-center of the box after training:(0.25, 0.25, 0.00)
+### 1.3.1 Rendering Using Spherical Harmonics (10 Points)
 
-side lengths of the box after training: (2.01, 1.50, 1.50)
+**Result**
 
-###  2.3. Visualization
-|Trained|TA|
-|:--:|:--:|
-|![part_2](data/part_2.gif)|![part_2_ta](data/part_2_ta.gif)|
+![q1_render_sh](data/q1_render_sh.gif)
 
-##  3. Optimizing a Neural Radiance Field (NeRF) (20 points)
-
-![part_3](data/part_3.gif)
-
-##  4. NeRF Extras (CHOOSE ONE! More than one is extra credit)
-
-###  4.1 View Dependence (10 points)
-
-|Data|Not View Dependent|View Dependent|
+|# of View|Without Spherical Harmonics|With Spherical Harmonics|
 |:--:|:--:|:--:|
-|Lego|![lego_high_res](data/lego_highres_part_3.gif)|![lego_high_res](data/lego_highres_view_dependent_part_3.gif)|
-|Mateirals|![materials_high_res](data/part_3_material.gif)|![materials_high_res_view_dependent](data/materials_highres_view_dependent_part_3.gif)|
+|View 000|![q1_render_000](data/q1_render/000.png)|![q1_render_sh_000](data/q1_render_sh/000.png)|
+|View 002|![q1_render_002](data/q1_render/002.png)|![q1_render_sh_002](data/q1_render_sh/002.png)|
 
-As we can see from the two high resolution dataset, with view dependet, the side view of lego feels more realistic and contrast. From materials dataset, we can see the refelction feels more metallic and realistic.
+For View 000, we can see the shading with spherical harmonics is more natrural. We can tell by the cusion and the chair handles.
 
-One thing to note down is that adding view dependet makes the model more complex and harder to train. Also may lead to potential overfit on some of the directions.
+For View 002, we can see the shading on the cusion and the chair-back is more realistic with spherical harmonics.
 
-###  4.2 Coarse/Fine Sampling (10 points)
+### 1.3.2 Training On a Harder Scene (10 Points)
 
-# B. Neural Surface Rendering (50 points)
+# 2. Diffusion-guided Optimization
 
-##  5. Sphere Tracing (10 points)
+## 2.1 SDS Loss + Image Optimization (20 points)
 
-![part_5](data/part_5.gif)
+**Prompt:** a hamburger
+|Without Guidance (1000 iterations)|With Guidance (1000 iterations)|
+|:--:|:--:|
+|![a_hamburger_wo_g_output_a_iter_1000](data/a_hamburger_wo_g_output_a_iter_1000.png)|![a_hamburger_w_g_output_a_iter_1000](data/a_hamburger_w_g_output_a_iter_1000.png)|
 
-The algorithm starts initilizing points at camera origins, iteratively we march the points with signed distance along the ray. If a point hit the surface, we stop operating the point. We run the algorithm until all points hit the surface or max_iter reached. To prevent we left off some points, we still include points that are within the max range but not on the surface.
+**Prompt:** a standing corgi dog
+|Without Guidance (1000 iterations)|With Guidance (1000 iterations)|
+|:--:|:--:|
+|![a_standing_corgi_wo_g_output_a_iter_1000](data/a_standing_corgi_wo_g_output_a_iter_1000.png)|![a_standing_corgi_w_g_output_a_iter_1000](data/a_standing_corgi_w_g_output_a_iter_1000.png)|
 
-##  6. Optimizing a Neural SDF (15 points)
+**Prompt:** an unicorn
+|Without Guidance (200 iterations)|With Guidance (2000 iterations)|
+|:--:|:--:|
+|![an_unicorn_wo_g_output_a_iter_2000](data/an_unicorn_wo_g_output_a_iter_2000.png)|![an_unicorn_w_g_output_a_iter_2000](data/an_unicorn_w_g_output_a_iter_2000.png)|
 
-![part_6_input](data/part_6_input.gif) ![part_6](data/part_6.gif)
+**Prompt:** a place in my dream
+|Without Guidance (800 iterations)|With Guidance (800 iterations)|
+|:--:|:--:|
+|![a_place_in_my_dream_wo_g_output_a_iter_800](data/a_place_in_my_dream_wo_g_output_a_iter_800.png)|![a_place_in_my_dream_w_g_output_a_iter_800](data/a_place_in_my_dream_w_g_output_a_iter_800.png)|
 
-My MLP has four chunks, the first chunk embed the points with harmonic embedding, after that a common MLP network has structure MLPWithInputSkips takes in the embedding, and send it to a distance network has structure MLPWithInputSkips, and another color network has 3 linear layers.
+## 2.2 Texture Map Optimization for Mesh (15 points)
 
-Eikonol loss takes in the neural network's gradient, calculates its norm and make it close to 1 as possible. This helps the neural network to generates smoother surface. Taking the mean helps the loss to be not too big, ensure smooth training also.
+**Prompt:** a zebra
+|Initial Mesh|Final Mesh|
+|:--:|:--:|
+|![a_zebra_initial_mesh](data/a_zebra_initial_mesh.gif)|![a_zebra_final_mesh](data/a_zebra_final_mesh.gif)|
 
-##  7. VolSDF (15 points)
+**Prompt:** a leopard
+|Initial Mesh|Final Mesh|
+|:--:|:--:|
+|![a_leopard_initial_mesh](data/a_leopard_initial_mesh.gif)|![a_leopard_final_mesh](data/a_leopard_final_mesh.gif)|
 
-From [VolSDF](https://arxiv.org/abs/2106.12052) paper, we have two formulas:
+## 2.3 NeRF Optimization (15 points)
 
-![f1](data/f1.png)
+- lambda_entropy: 0.001
+- lambda_orient: 0.01
+- latent_iter_ratio: 0.2
 
-![f2](data/f2.png)
+**Prompt:** a standing corgi dog
+|RGB|Depth|
+|:--:|:--:|
+|<img src="data/a_standing_corgi_rgb_ep_99.gif" width=250 height=250>|<img src="data/a_standing_corgi_depth_ep_99.gif" width=250 height=250>|
 
-where sigma is the density, alpha and beta are the tuned parameters and omega is the signed distance function. Ψ_β is the Cumulative Distribution Function (CDF) of
-the Laplace distribution with zero mean and β scale. Large beta would bias the surface to have smoother transition, and low beta would encourage sharper representation. With large beta the SDF will be easier to train because it has a more stable gradient. If I were to learn an accurate surface, I would choose low beta so I can catch more high frequency features.
+**Prompt:** an unicorn
+|RGB|Depth|
+|:--:|:--:|
+|<img src="data/an_unicorn_rgb_ep_99.gif" width=250 height=250>|<img src="data/an_unicorn_depth_ep_99.gif" width=250 height=250>|
 
-The below is the result with default beta (0.05)
+**Prompt:** a rose
+|RGB|Depth|
+|:--:|:--:|
+|<img src="data/a_rose_rgb_ep_99.gif" width=250 height=250>|<img src="data/a_rose_depth_ep_99.gif" width=250 height=250>|
 
-![part_7_rgb](data/part_7.gif) ![part_7_mesh](data/part_7_geometry.gif) 
+## 2.4 Extensions (Choose at least one! More than one is extra credit)
 
-The below is the result with 10 times beta (0.5)
+### 2.4.1 View-dependent text embedding (10 points)
+- lambda_entropy: 0.0005
+- lambda_orient: 0.0005
+- latent_iter_ratio: 0.01
 
-![large_beta](data/part_7_beta05.gif) ![large_beta](data/part_7_geometry_beta05.gif)
+**Prompt:** a standing corgi dog
+|RGB|Depth|
+|:--:|:--:|
+|<img src="data/a_standing_corgi_view_dep_rgb_ep_99.gif" width=250 height=250>|<img src="data/a_standing_corgi_view_dep_depth_ep_99.gif" width=250 height=250>|
 
-Changed hyperparameters: n_harmonic_functions_xyz: 6 -> 4, n_layers_distance: 6 -> 2
 
-Less layers helped us to train faster, I should not lower n_harmonic_functions_xyz, this reduced the details. With larger n_harmonic_functions_xyz I should be able to produce better results.
 
-## 8. Neural Surface Extras (CHOOSE ONE! More than one is extra credit)
+**Prompt:** an unicorn
+|RGB|Depth|
+|:--:|:--:|
+|<img src="data/an_unicorn_view_dep_rgb_ep_99.gif" width=250 height=250>|<img src="data/an_unicorn_view_dep_depth_ep_99.gif" width=250 height=250>|
 
-### 8.1. Render a Large Scene with Sphere Tracing (10 points)
+With view depedency, the multi-ears of corgi dog is resolved, and the number of legs of the unicorn is also correct. 
 
-### 8.2 Fewer Training Views (10 points)
+### 2.4.2 Other 3D representation (10 points)
 
-| Settings       | NeRF                        | VolSDF                     | VolSDF Geometry             |
-|---------------|----------------------------|----------------------------|----------------------------|
-| Full dataset  | ![part_3](data/part_3.gif) | ![part_7](data/part_7.gif) | ![part_7_geometry](data/part_7_geometry.gif) |
-| 1/10 dataset  | ![part_3_10](data/part_3_10.gif) | ![part_7_10](data/part_7_10.gif) | ![part_7_geometry_10](data/part_7_geometry_10.gif) |
-
-As we can see, with fewer trainging views, both methonds degrades. From the red lights on top of the bulldozer and the details in the back of the bulldozer, we can tell that NeRF degrades more significantly. However, NeRF still captures more detail than VolSDF.
-
-### 8.3 Alternate SDF to Density Conversions (10 points)
+### 2.4.3 Variation of implementation of SDS loss (10 points)

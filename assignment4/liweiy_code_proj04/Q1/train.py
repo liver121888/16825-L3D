@@ -19,8 +19,10 @@ def make_trainable(gaussians):
     # pass
     if not gaussians.is_isotropic:
         gaussians.pre_act_quats.requires_grad = True
-    # if gaussians.use_spherical_harmonics:
-    #     gaussians.spherical_harmonics.requires_grad = True
+    
+    # [Q 1.3.1]
+    if gaussians.use_spherical_harmonics:
+        gaussians.spherical_harmonics.requires_grad = True
     
     gaussians.means.requires_grad = True
     gaussians.pre_act_scales.requires_grad = True
@@ -224,7 +226,7 @@ def get_args():
         help="Path to the dataset."
     )
     parser.add_argument(
-        "--gaussians_per_splat", default=1024, type=int,
+        "--gaussians_per_splat", default=-1, type=int,
         help=(
             "Number of gaussians to splat in one function call. If set to -1, "
             "then all gaussians in the scene are splat in a single function call. "

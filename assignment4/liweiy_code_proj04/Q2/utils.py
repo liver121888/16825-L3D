@@ -121,7 +121,7 @@ def render_360_views(mesh, renderer, device, dist=3, elev=0, output_path=None):
     images = [img_as_ubyte(img) for img in images]
 
     # save a gif of the 360 rotation
-    imageio.mimsave(output_path, images, fps=15)
+    imageio.mimsave(output_path, images, fps=15, loop=0)
 
 
 from pytorch3d.io import load_obj, load_objs_as_meshes

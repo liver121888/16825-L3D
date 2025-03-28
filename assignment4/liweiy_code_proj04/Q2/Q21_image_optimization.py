@@ -32,7 +32,7 @@ def optimize_an_image(
 
     # Step 3. Create optimizer and loss function
     optimizer = torch.optim.AdamW([latents], lr=1e-1, weight_decay=0)
-    total_iter = 400
+    total_iter = 2000
     scheduler = get_cosine_schedule_with_warmup(optimizer, 100, int(total_iter * 1.5))
 
     # Step 4. Training loop to optimize the latents
@@ -42,9 +42,9 @@ def optimize_an_image(
         
         ### YOUR CODE HERE ###
         if args.sds_guidance:
-            loss = 
+            loss = sds.sds_loss(latents, embeddings['default'], embeddings['uncond'])
         else:
-            loss = 
+            loss = loss = sds.sds_loss(latents, embeddings['default'])
 
         # Backward pass
         loss.backward()
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     # initialize SDS
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     sds = SDS(sd_version="2.1", device=device, output_dir=output_dir)
 
     # optimize an image

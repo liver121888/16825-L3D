@@ -3,6 +3,7 @@ import os
 import os.path as osp
 import random
 import time
+import matplotlib.pyplot as plt
 
 import imageio
 import numpy as np
@@ -29,7 +30,7 @@ def optimize_nerf(
     """
 
     # Step 1. Create text embeddings from prompt
-    embeddings = prepare_embeddings(sds, prompt, neg_prompt, view_dependent=False)
+    embeddings = prepare_embeddings(sds, prompt, neg_prompt, view_dependent=args.view_dep_text)
 
     # Step 2. Set up NeRF model
     model = NeRFNetwork(args).to(device)
@@ -87,6 +88,12 @@ def optimize_nerf(
             exp_iter_ratio = (global_step - args.exp_start_iter) / (
                 args.exp_end_iter - args.exp_start_iter
             )
+            # print("exp_start_iter:", args.exp_start_iter)
+            # print("exp_end_iter:", args.exp_end_iter)
+            # print("exp_iter_ratio:", exp_iter_ratio)
+            # exp_start_iter: 0                                                                               
+            # exp_end_iter: 10000                                                                             
+            # exp_iter_ratio: 0.0001 -> 0.0004
 
             # Load the data
             rays_o = data["rays_o"]  # [B, N, 3]
@@ -111,7 +118,6 @@ def optimize_nerf(
                 ambient_ratio = 1.0
                 shading = "normal"
                 bg_color = None
-
             else:
                 # random shading
                 ambient_ratio = (
@@ -160,12 +166,21 @@ def optimize_nerf(
                 text_cond = embeddings["default"]
             else:
                 ### YOUR CODE HERE ###
-                pass
+                # pass
+                if azimuth >= 90:
+                    text_cond = embeddings["front"]
+                elif (azimuth < 90 and azimuth >= 0) or azimuth < -90:
+                    text_cond = embeddings["side"]
+                else:
+                    text_cond = embeddings["back"]
 
   
             ### YOUR CODE HERE ###
-            latents = 
-            loss = 
+            pred_rgb = torch.nn.functional.interpolate(pred_rgb, size=(512, 512))
+            # plt.imshow(pred_rgb[0].permute(1, 2, 0).detach().cpu().numpy())
+            latents = sds.encode_imgs(pred_rgb)
+            
+            loss = sds.sds_loss(latents, text_cond, text_uncond, pixel_space=args.pixel_space)
 
             # regularizations
             if args.lambda_entropy > 0:
@@ -301,10 +316,13 @@ if __name__ == "__main__":
     ### YOUR CODE HERE ###
     # You wil need to tune the following parameters to obtain good NeRF results
     ### regularizations
-    parser.add_argument('--lambda_entropy', type=float, default=0, help="loss scale for alpha entropy")
-    parser.add_argument('--lambda_orient', type=float, default=0, help="loss scale for orientation")
+    # 1e-3
+    # 1e-2
+    # 0.2
+    parser.add_argument('--lambda_entropy', type=float, default=5e-4, help="loss scale for alpha entropy")
+    parser.add_argument('--lambda_orient', type=float, default=5e-4, help="loss scale for orientation")
     ### shading options
-    parser.add_argument('--latent_iter_ratio', type=float, default=0, help="training iters that only use albedo shading")
+    parser.add_argument('--latent_iter_ratio', type=float, default=0.5, help="training iters that only use albedo shading")
 
 
     parser.add_argument(
@@ -316,6 +334,12 @@ if __name__ == "__main__":
         default=0,
         help="option to use view dependent text embeddings for nerf optimization",
     )
+    parser.add_argument(
+        "--pixel_space",
+        action='store_true',
+        default=False,
+        help="option to use pixel_space to calculate the loss",
+    )
     parser = add_config_arguments(
         parser
     )  # add additional arguments for nerf optimization, You don't need to change the setting here by default
@@ -323,6 +347,8 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     seed_everything(args.seed)
+
+   
 
     # create output directory
     args.output_dir = osp.join(args.output_dir, "nerf")

@@ -124,6 +124,7 @@ class SDS:
         text_embeddings_uncond=None,
         guidance_scale=100,
         grad_scale=1,
+        pixel_space=False
     ):
         """
         Compute the SDS loss.
@@ -139,6 +140,9 @@ class SDS:
             loss (tensor): SDS loss
         """
 
+        # Reference
+        # https://github.com/ashawkey/stable-dreamfusion/blob/main/guidance/sd_utils.py
+        
         # sample a timestep ~ U(0.02, 0.98) to avoid very high/low noise level
         t = torch.randint(
             self.min_step,
@@ -151,19 +155,40 @@ class SDS:
         # predict the noise residual with unet, NO grad!
         with torch.no_grad():
             ### YOUR CODE HERE ###
- 
+            
+            
+            noise = torch.randn_like(latents)
+            # noise = torch.rand(latents.shape, device=self.device)
+
+            latents_noisy = self.scheduler.add_noise(latents, noise, t)
+
+            noise_pred = self.unet(latents_noisy, t, text_embeddings).sample
 
             if text_embeddings_uncond is not None and guidance_scale != 1:
                 ### YOUR CODE HERE ###
-                pass
- 
-
+                # pass
+                noise_pred_uncond = self.unet(latents_noisy, t, text_embeddings_uncond).sample
+                noise_pred = noise_pred_uncond + guidance_scale * (noise_pred - noise_pred_uncond)
 
         # Compute SDS loss
         w = 1 - self.alphas[t]
+        
         ### YOUR CODE HERE ###
+        gradient = w * (noise_pred - noise)
+        gradient = torch.nan_to_num(gradient)
 
-
-        loss = 
+        latents_target = (latents - grad_scale * gradient).detach()
+        # 1, 4, 64, 64
+        # print(latents.shape)
+        # single image
+        
+        if pixel_space:
+            with torch.no_grad():
+                target_rgb_pixels = self.decode_latents(latents_target) / 255
+                rgb_pixels = self.decode_latents(latents) / 255
+                # simple mse loss
+                loss = ((target_rgb_pixels - rgb_pixels)**2).sum()
+        else:
+            loss = 0.5 * F.mse_loss(latents, latents_target, reduction='sum')
 
         return loss
