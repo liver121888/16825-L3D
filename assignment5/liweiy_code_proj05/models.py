@@ -20,13 +20,13 @@ class transform_net(nn.Module):
         )
 
         self.decoder = nn.Sequential(
-            nn.Conv1d(1024, 512, kernel_size=1),
+            nn.Linear(1024, 512),
             nn.BatchNorm1d(512),
             nn.ReLU(),
-            nn.Conv1d(512, 256, kernel_size=1),
+            nn.Linear(512, 256),
             nn.BatchNorm1d(256),
             nn.ReLU(),
-            nn.Conv1d(256, input_dim * input_dim, kernel_size=1),
+            nn.Linear(256, input_dim*input_dim)
         )
 
         self.input_dim = input_dim
@@ -34,17 +34,17 @@ class transform_net(nn.Module):
     def forward(self, x):
         n = x.shape[0]
 
-        x = self.encoeder(x)
+        x = self.encoder(x)
         x = torch.max(x, 2, keepdim=True)[0]
         x = x.view(-1, 1024)
         x = self.decoder(x)
 
-        iden = torch.eye(self.n_dim_input) \
-            .view(1, self.n_dim_input*self.n_dim_input) \
+        iden = torch.eye(self.input_dim) \
+            .view(1, self.input_dim*self.input_dim) \
             .expand(n, -1).to(x.device)
 
         x = x + iden
-        return x.view(-1, self.n_dim_input, self.n_dim_input)
+        return x.view(-1, self.input_dim, self.input_dim)
 
 
 class feat_model(nn.Module):
@@ -106,7 +106,7 @@ class cls_model(nn.Module):
     def __init__(self, num_classes=3):
         super(cls_model, self).__init__()
         # pass
-        self.feature_extractor = feat_model(global_feat=False, 
+        self.feature_extractor = feat_model(global_feat=True, 
                                             input_transform=True, 
                                             feature_transform=True)
         self.decoder = nn.Sequential(
@@ -127,7 +127,12 @@ class cls_model(nn.Module):
         output: tensor of size (B, num_classes)
         '''
         # pass
+        # print(points.shape)
+        # torch.Size([32, 10000, 3])
         x = self.feature_extractor(points)
+        # print(x.shape)
+        # ([32, 1024, 10000])
+
         x = self.decoder(x)
         return F.log_softmax(x, dim=1)
 

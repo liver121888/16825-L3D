@@ -10,12 +10,19 @@ class CustomDataSet(Dataset):
         self.main_dir = args.main_dir 
         self.task = args.task 
 
+        # if train:
+        #     data_path = self.main_dir + self.task + "/data_train.npy"
+        #     label_path = self.main_dir + self.task + "/label_train.npy"
+        # else:
+        #     data_path = self.main_dir + self.task + "/data_test.npy"
+        #     label_path = self.main_dir + self.task + "/label_test.npy"
+
         if train:
-            data_path = self.main_dir + self.task + "/data_train.npy"
-            label_path = self.main_dir + self.task + "/label_train.npy"
+            data_path = "/mnt/data/assignment5/data/" +self.task + "/data_train.npy"
+            label_path = "/mnt/data/assignment5/data/" + self.task + "/label_train.npy"
         else:
-            data_path = self.main_dir + self.task + "/data_test.npy"
-            label_path = self.main_dir + self.task + "/label_test.npy"
+            data_path = "/mnt/data/assignment5/data/" + self.task + "/data_test.npy"
+            label_path = "/mnt/data/assignment5/data/" + self.task + "/label_test.npy"
         
         self.data = torch.from_numpy(np.load(data_path))
         self.label = torch.from_numpy(np.load(label_path)).to(torch.long) # in cls task, (N,), in seg task, (N, 10000), N is the number of objects
