@@ -1,5 +1,6 @@
 import os
 import torch
+import numpy as np
 import pytorch3d
 from pytorch3d.renderer import (
     AlphaCompositor,
@@ -51,8 +52,22 @@ def get_points_renderer(
     )
     return renderer
 
+def viz_cloud(cloud, path, num_views=30, dist=3, elev=0, radius=0.02, fps=15):
 
-def viz_seg (verts, labels, path, device):
+    azim = range(0, 360, 360//num_views)
+    R, T = pytorch3d.renderer.cameras.look_at_view_transform(dist=dist, elev=elev, azim=azim, device=cloud.device)
+    c = pytorch3d.renderer.FoVPerspectiveCameras(R=R, T=T, fov=60, device=cloud.device)
+    renderer = get_points_renderer(device=cloud.device, radius=radius)
+
+    rgb = (cloud - cloud.min()) / (cloud.max() - cloud.min())
+    cloud = pytorch3d.structures.Pointclouds(points=cloud, features=rgb).to(cloud.device)
+
+    my_images = renderer(cloud.extend(num_views), cameras=c)
+    my_images = my_images.cpu().detach().numpy()
+    my_images = (my_images * 255).astype(np.uint8)
+    imageio.mimsave(path, my_images, fps=fps, loop=0)
+
+def viz_seg(verts, labels, path, device):
     """
     visualize segmentation result
     output: a 360-degree gif
@@ -70,11 +85,11 @@ def viz_seg (verts, labels, path, device):
 
     sample_verts = verts.unsqueeze(0).repeat(30,1,1).to(torch.float)
     sample_labels = labels.unsqueeze(0)
-    sample_colors = torch.zeros((1,10000,3))
+    sample_colors = torch.zeros((1,10000,3), device=device)
 
     # Colorize points based on segmentation labels
     for i in range(6):
-        sample_colors[sample_labels==i] = torch.tensor(colors[i])
+        sample_colors[sample_labels==i] = torch.tensor(colors[i], device=device)
 
     sample_colors = sample_colors.repeat(30,1,1).to(torch.float)
 
@@ -84,5 +99,5 @@ def viz_seg (verts, labels, path, device):
     rend = renderer(point_cloud, cameras=c).cpu().numpy() # (30, 256, 256, 3)
     rend = (rend * 255).astype(np.uint8)
 
-    imageio.mimsave(path, rend, fps=15)
+    imageio.mimsave(path, rend, fps=15, loop=0)
 

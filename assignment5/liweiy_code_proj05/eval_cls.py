@@ -1,9 +1,9 @@
 import numpy as np
 import argparse
-
+import os
 import torch
 from models import cls_model
-from utils import create_dir
+from utils import create_dir, viz_cloud
 
 def create_parser():
     """Creates a parser for command-line arguments.
@@ -48,14 +48,59 @@ if __name__ == '__main__':
 
     # Sample Points per Object
     ind = np.random.choice(10000,args.num_points, replace=False)
-    test_data = torch.from_numpy((np.load(args.test_data))[:,ind,:])
-    test_label = torch.from_numpy(np.load(args.test_label))
+    test_data = torch.from_numpy((np.load(args.test_data))[:,ind,:]).to(args.device)
+    test_label = torch.from_numpy(np.load(args.test_label)).to(args.device)
+
+    print("test data shape: {}".format(test_data.shape))
+    # ([953, 10000, 3])
+    print("test label shape: {}".format(test_label.shape))
+    # ([953])
 
     # ------ TO DO: Make Prediction ------
-    pred_label = model(test_data.to(args.device))
-    pred_label = torch.argmax(pred_label, dim=1)
+    data_loader = torch.split(test_data, 32)
+    label_loader = torch.split(test_label, 32)
+
+    pred_labels = []
+
+    if os.path.exists(args.output_dir + "/cls"):
+        pass
+    else:
+        os.makedirs(args.output_dir + "/cls")
+
+    # 5 objects, 2 bad, 3 good class
+    vized_set = set()
+    bad_cnt = 0
+    good_cnt = 0
+    for data, label in zip(data_loader, label_loader):
+
+        pred_label = torch.argmax(model(data), dim=1)
+        pred_labels.append(pred_label)
+        # print("data shape: {}".format(data.shape))
+        # print("label shape: {}".format(label.shape))
+        # print("pred label shape: {}".format(pred_label.shape))
+
+        for i in range(label.shape[0]):
+            pcl = data[i]
+            # ([10000, 3])
+            # print("pcl shape: {}".format(pcl.shape))
+            l = label[i]
+            p_l = pred_label[i]
+
+            if p_l != l and bad_cnt < 2:
+                print("bad prediction {}: pred {} vs gt {}".format(bad_cnt, p_l, l))
+                viz_cloud(pcl.unsqueeze(0), args.output_dir + "/cls/bad_pred_{}.gif".format(bad_cnt))
+                bad_cnt += 1
+            else:
+                if int(l) not in vized_set and good_cnt < 3:
+                    vized_set.add(int(l))
+                    print("good prediction: pred {} vs gt {}".format(p_l, l))
+                    viz_cloud(pcl.unsqueeze(0), args.output_dir + "/cls/good_pred_{}.gif".format(good_cnt))
+                    good_cnt += 1
+
+
+    pred_labels = torch.cat(pred_labels)
 
     # Compute Accuracy
-    test_accuracy = pred_label.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])
+    test_accuracy = pred_labels.eq(test_label.data).cpu().sum().item() / (test_label.size()[0])
     print ("test accuracy: {}".format(test_accuracy))
 

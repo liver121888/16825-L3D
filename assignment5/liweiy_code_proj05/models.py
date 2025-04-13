@@ -141,6 +141,7 @@ class seg_model(nn.Module):
     def __init__(self, num_seg_classes = 6):
         super(seg_model, self).__init__()
         # pass
+        self.num_seg_classes = num_seg_classes
         self.feature_extractor = feat_model(global_feat=False, 
                                             input_transform=True, 
                                             feature_transform=True)
