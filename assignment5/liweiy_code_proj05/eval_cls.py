@@ -4,6 +4,7 @@ import os
 import torch
 from models import cls_model
 from utils import create_dir, viz_cloud
+from pytorch3d.transforms import Rotate
 
 def create_parser():
     """Creates a parser for command-line arguments.
@@ -20,6 +21,7 @@ def create_parser():
     parser.add_argument('--test_data', type=str, default='/mnt/data/assignment5/data/cls/data_test.npy')
     parser.add_argument('--test_label', type=str, default='/mnt/data/assignment5/data/cls/label_test.npy')
     parser.add_argument('--output_dir', type=str, default='./output')
+    parser.add_argument('--rotation', type=float, default=None, help='rotation angle in degrees')
 
     parser.add_argument('--exp_name', type=str, default="exp", help='The name of the experiment')
 
@@ -56,6 +58,16 @@ if __name__ == '__main__':
     print("test label shape: {}".format(test_label.shape))
     # ([953])
 
+    if args.rotation is not None:
+        rotation = args.rotation / 180 * np.pi
+        R0 = torch.tensor([[1., 0., 0.],
+                            [0., float(np.cos(rotation)), float(np.sin(rotation))],
+                            [0., float(-np.sin(rotation)), float(np.cos(rotation))]]).unsqueeze(0)
+        R0 = torch.tile(R0, (test_data.shape[0], 1, 1)).to(args.device)
+        trans = Rotate(R0)
+        test_data = trans.transform_points(test_data)
+
+
     # ------ TO DO: Make Prediction ------
     data_loader = torch.split(test_data, 32)
     label_loader = torch.split(test_label, 32)
@@ -86,10 +98,11 @@ if __name__ == '__main__':
             l = label[i]
             p_l = pred_label[i]
 
-            if p_l != l and bad_cnt < 2:
-                print("bad prediction {}: pred {} vs gt {}".format(bad_cnt, p_l, l))
-                viz_cloud(pcl.unsqueeze(0), args.output_dir + "/cls/bad_pred_{}.gif".format(bad_cnt))
-                bad_cnt += 1
+            if p_l != l:
+                if bad_cnt < 2:
+                    print("bad prediction {}: pred {} vs gt {}".format(bad_cnt, p_l, l))
+                    viz_cloud(pcl.unsqueeze(0), args.output_dir + "/cls/bad_pred_{}.gif".format(bad_cnt))
+                    bad_cnt += 1
             else:
                 if int(l) not in vized_set and good_cnt < 3:
                     vized_set.add(int(l))

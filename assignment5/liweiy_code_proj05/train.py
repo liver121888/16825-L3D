@@ -162,8 +162,8 @@ def create_parser():
 
     # Training hyper-parameters
     parser.add_argument('--num_epochs', type=int, default=70)
-    parser.add_argument('--batch_size', type=int, default=128, help='The number of images in a batch.')
-    parser.add_argument('--num_workers', type=int, default=0, help='The number of threads to use for the DataLoader.')
+    parser.add_argument('--batch_size', type=int, default=32, help='The number of images in a batch.')
+    parser.add_argument('--num_workers', type=int, default=4, help='The number of threads to use for the DataLoader.')
     parser.add_argument('--lr', type=float, default=0.001, help='The learning rate (default 0.001)')
 
     parser.add_argument('--exp_name', type=str, default="exp", help='The name of the experiment')
