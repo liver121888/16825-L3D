@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>Assignment 5</title>
+            <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only],
+.vscode-high-contrast:not(.vscode-high-contrast-light) img[src$=\#gh-light-mode-only],
+.vscode-high-contrast-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+</style>
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item {
+    list-style-type: none;
+}
+
+.task-list-item-checkbox {
+    margin-left: -20px;
+    vertical-align: middle;
+    pointer-events: none;
+}
+</style>
+<style>
+:root {
+  --color-note: #0969da;
+  --color-tip: #1a7f37;
+  --color-warning: #9a6700;
+  --color-severe: #bc4c00;
+  --color-caution: #d1242f;
+  --color-important: #8250df;
+}
+
+</style>
+<style>
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-note: #2f81f7;
+    --color-tip: #3fb950;
+    --color-warning: #d29922;
+    --color-severe: #db6d28;
+    --color-caution: #f85149;
+    --color-important: #a371f7;
+  }
+}
+
+</style>
+<style>
+.markdown-alert {
+  padding: 0.5rem 1rem;
+  margin-bottom: 16px;
+  color: inherit;
+  border-left: .25em solid #888;
+}
+
+.markdown-alert>:first-child {
+  margin-top: 0
+}
+
+.markdown-alert>:last-child {
+  margin-bottom: 0
+}
+
+.markdown-alert .markdown-alert-title {
+  display: flex;
+  font-weight: 500;
+  align-items: center;
+  line-height: 1
+}
+
+.markdown-alert .markdown-alert-title .octicon {
+  margin-right: 0.5rem;
+  display: inline-block;
+  overflow: visible !important;
+  vertical-align: text-bottom;
+  fill: currentColor;
+}
+
+.markdown-alert.markdown-alert-note {
+  border-left-color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-note .markdown-alert-title {
+  color: var(--color-note);
+}
+
+.markdown-alert.markdown-alert-important {
+  border-left-color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-important .markdown-alert-title {
+  color: var(--color-important);
+}
+
+.markdown-alert.markdown-alert-warning {
+  border-left-color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-warning .markdown-alert-title {
+  color: var(--color-warning);
+}
+
+.markdown-alert.markdown-alert-tip {
+  border-left-color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-tip .markdown-alert-title {
+  color: var(--color-tip);
+}
+
+.markdown-alert.markdown-alert-caution {
+  border-left-color: var(--color-caution);
+}
+
+.markdown-alert.markdown-alert-caution .markdown-alert-title {
+  color: var(--color-caution);
+}
+
+</style>
+        
+        </head>
+        <body class="vscode-body vscode-light">
+            <h1 id="assignment-5">Assignment 5</h1>
+<p>Liwei Yang, <a href="mailto:liweiy@andrew.cmu.edu">liweiy@andrew.cmu.edu</a></p>
+<p>Collaborators: fuchengp, jiamuz, jinkaiq</p>
+<ul>
+<li><a href="#assignment-5">Assignment 5</a>
+<ul>
+<li><a href="#q1-classification-model-40-points">Q1. Classification Model (40 points)</a>
+<ul>
+<li><a href="#successful-predictions">Successful predictions</a></li>
+<li><a href="#wrong-predictions">Wrong predictions</a></li>
+</ul>
+</li>
+<li><a href="#q2-segmentation-model-40-points">Q2. Segmentation Model (40 points)</a>
+<ul>
+<li><a href="#good-predictions">Good predictions</a></li>
+<li><a href="#bad-predictions">Bad predictions</a></li>
+</ul>
+</li>
+<li><a href="#q3-robustness-analysis-20-points">Q3. Robustness Analysis (20 points)</a>
+<ul>
+<li><a href="#classification-model">Classification Model</a>
+<ul>
+<li><a href="#rotation">Rotation</a>
+<ul>
+<li><a href="#successful-predictions-1">Successful predictions</a></li>
+<li><a href="#wrong-predictions-1">Wrong predictions</a></li>
+</ul>
+</li>
+<li><a href="#fewer-points">Fewer points</a>
+<ul>
+<li><a href="#successful-predictions-2">Successful predictions</a></li>
+<li><a href="#wrong-predictions-2">Wrong predictions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#segmentation-model">Segmentation Model</a>
+<ul>
+<li><a href="#rotation-1">Rotation</a>
+<ul>
+<li><a href="#good-predictions-1">Good predictions</a></li>
+<li><a href="#bad-predictions-1">Bad predictions</a></li>
+</ul>
+</li>
+<li><a href="#fewer-points-1">Fewer points</a>
+<ul>
+<li><a href="#good-predictions-2">Good predictions</a></li>
+<li><a href="#bad-predictions-2">Bad predictions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#q4-bonus-question---locality-20-points">Q4. Bonus Question - Locality (20 points)</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="q1-classification-model-40-points">Q1. Classification Model (40 points)</h2>
+<p>I trained the model for 120 epochs. The test accuracy is 97.7%.</p>
+<h3 id="successful-predictions">Successful predictions</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 1 (Vase)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls/good_pred_0.gif" alt="good_pred_0"></td>
+<td style="text-align:center"><img src="data/cls/good_pred_1.gif" alt="good_pred_1"></td>
+<td style="text-align:center"><img src="data/cls/good_pred_2.gif" alt="good_pred_2"></td>
+</tr>
+</tbody>
+</table>
+<h3 id="wrong-predictions">Wrong predictions</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Gt Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 1 (Vase)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pred Label</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls/bad_pred_0.gif" alt="bad_pred_0"></td>
+<td style="text-align:center"><img src="data/cls/bad_pred_1.gif" alt="bad_pred_1"></td>
+</tr>
+</tbody>
+</table>
+<p>The model predicts correctly for most of the time. Yet, for some ambiguous shapes, the model cannot predict well. For example, in the wrong predictions, sample 1 predicts a lamp on a folded chair, and for sample 2, the model predicts a rounded vase as the lamp.</p>
+<h2 id="q2-segmentation-model-40-points">Q2. Segmentation Model (40 points)</h2>
+<p>I trained the model for 40 epochs. The test accuracy is 89.5%.</p>
+<h3 id="good-predictions">Good predictions</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg/good_pred_0.gif" alt="good_pred_0"></td>
+<td style="text-align:center"><img src="data/seg/good_pred_1.gif" alt="good_pred_1"></td>
+<td style="text-align:center"><img src="data/seg/good_pred_2.gif" alt="good_pred_2"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg/good_gt_0.gif" alt="good_gt_0"></td>
+<td style="text-align:center"><img src="data/seg/good_gt_1.gif" alt="good_gt_1"></td>
+<td style="text-align:center"><img src="data/seg/good_gt_2.gif" alt="good_gt_2"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">98.5%</td>
+<td style="text-align:center">96.6%</td>
+<td style="text-align:center">97.7%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bad-predictions">Bad predictions</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg/bad_pred_0.gif" alt="bad_pred_0"></td>
+<td style="text-align:center"><img src="data/seg/bad_pred_1.gif" alt="bad_pred_1"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg/bad_gt_0.gif" alt="bad_gt_0"></td>
+<td style="text-align:center"><img src="data/seg/bad_gt_1.gif" alt="bad_gt_1"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">38.2%</td>
+<td style="text-align:center">40.4%</td>
+</tr>
+</tbody>
+</table>
+<p>The model predicts regular chairs well. Yet, when the chair has some special features, for example, sample 1 only has one armrest and sample 2 has elongated armrests, the predictions start to degrade.</p>
+<h2 id="q3-robustness-analysis-20-points">Q3. Robustness Analysis (20 points)</h2>
+<h3 id="classification-model">Classification Model</h3>
+<h4 id="rotation">Rotation</h4>
+<p>I applied 30 degrees rotation to the z-axis.</p>
+<p>test accuracy: 82.6%</p>
+<h5 id="successful-predictions-1">Successful predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 1 (Vase)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls_rotation/good_pred_0.gif" alt="good_pred_0_rotation"></td>
+<td style="text-align:center"><img src="data/cls_rotation/good_pred_1.gif" alt="good_pred_1_rotation"></td>
+<td style="text-align:center"><img src="data/cls_rotation/good_pred_2.gif" alt="good_pred_2_rotation"></td>
+</tr>
+</tbody>
+</table>
+<h5 id="wrong-predictions-1">Wrong predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Gt Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pred Label</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls_rotation/bad_pred_0.gif" alt="bad_pred_0_rotation"></td>
+<td style="text-align:center"><img src="data/cls_rotation/bad_pred_1.gif" alt="bad_pred_1_rotation"></td>
+</tr>
+</tbody>
+</table>
+<h4 id="fewer-points">Fewer points</h4>
+<p>2000 points</p>
+<p>test accuracy: 0.9758656873032528</p>
+<h5 id="successful-predictions-2">Successful predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 1 (Vase)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls_points/good_pred_0.gif" alt="good_pred_0_points"></td>
+<td style="text-align:center"><img src="data/cls_points/good_pred_1.gif" alt="good_pred_1_points"></td>
+<td style="text-align:center"><img src="data/cls_points/good_pred_2.gif" alt="good_pred_2_points"></td>
+</tr>
+</tbody>
+</table>
+<h5 id="wrong-predictions-2">Wrong predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Gt Label</td>
+<td style="text-align:center">Class 0 (Chair)</td>
+<td style="text-align:center">Class 1 (Vase)</td>
+</tr>
+<tr>
+<td style="text-align:center">Pred Label</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+<td style="text-align:center">Class 2 (Lamp)</td>
+</tr>
+<tr>
+<td style="text-align:center">Point Cloud</td>
+<td style="text-align:center"><img src="data/cls_points/bad_pred_0.gif" alt="bad_pred_0_points"></td>
+<td style="text-align:center"><img src="data/cls_points/bad_pred_1.gif" alt="bad_pred_1_points"></td>
+</tr>
+</tbody>
+</table>
+<p>The rotation degrades the model's performance more. I think that because fewer sample points still maintain the general shapes, the performance does not degrade that much. However, for rotation, the tilted chairback might be falsely interpreted as the neck of the lamp. Thus, the model falsely predicts that two chairs to be lamps.</p>
+<h3 id="segmentation-model">Segmentation Model</h3>
+<h4 id="rotation-1">Rotation</h4>
+<p>I applied 30 degrees rotation to the z-axis.</p>
+<p>test accuracy: 75.8%</p>
+<h5 id="good-predictions-1">Good predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg_rotation/good_pred_0.gif" alt="good_pred_0_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/good_pred_1.gif" alt="good_pred_1_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/good_pred_2.gif" alt="good_pred_2_rotation"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg_rotation/good_gt_0.gif" alt="good_gt_0_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/good_gt_1.gif" alt="good_gt_1_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/good_gt_2.gif" alt="good_gt_2_rotation"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">90.7%</td>
+<td style="text-align:center">90.8%</td>
+<td style="text-align:center">92.0%</td>
+</tr>
+</tbody>
+</table>
+<h5 id="bad-predictions-1">Bad predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg_rotation/bad_pred_0.gif" alt="bad_pred_0_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/bad_pred_1.gif" alt="bad_pred_1_rotation"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg_rotation/bad_gt_0.gif" alt="bad_gt_0_rotation"></td>
+<td style="text-align:center"><img src="data/seg_rotation/bad_gt_1.gif" alt="bad_gt_1_rotation"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">42.0%</td>
+<td style="text-align:center">29.3%</td>
+</tr>
+</tbody>
+</table>
+<h4 id="fewer-points-1">Fewer points</h4>
+<p>2000 points</p>
+<p>test accuracy: 0.8959611021069692</p>
+<h5 id="good-predictions-2">Good predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+<th style="text-align:center">Sample 3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg_points/good_pred_0.gif" alt="good_pred_0_points"></td>
+<td style="text-align:center"><img src="data/seg_points/good_pred_1.gif" alt="good_pred_1_points"></td>
+<td style="text-align:center"><img src="data/seg_points/good_pred_2.gif" alt="good_pred_2_points"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg_points/good_gt_0.gif" alt="good_gt_0_points"></td>
+<td style="text-align:center"><img src="data/seg_points/good_gt_1.gif" alt="good_gt_1_points"></td>
+<td style="text-align:center"><img src="data/seg_points/good_gt_2.gif" alt="good_gt_2_points"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">95.1%</td>
+<td style="text-align:center">98.8%</td>
+<td style="text-align:center">90.5%</td>
+</tr>
+</tbody>
+</table>
+<h5 id="bad-predictions-2">Bad predictions</h5>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Sample</th>
+<th style="text-align:center">Sample 1</th>
+<th style="text-align:center">Sample 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Prediction</td>
+<td style="text-align:center"><img src="data/seg_points/bad_pred_0.gif" alt="bad_pred_0_points"></td>
+<td style="text-align:center"><img src="data/seg_points/bad_pred_1.gif" alt="bad_pred_1_points"></td>
+</tr>
+<tr>
+<td style="text-align:center">Ground Truth</td>
+<td style="text-align:center"><img src="data/seg_points/bad_gt_0.gif" alt="bad_gt_0_points"></td>
+<td style="text-align:center"><img src="data/seg_points/bad_gt_1.gif" alt="bad_gt_1_points"></td>
+</tr>
+<tr>
+<td style="text-align:center">Accuracy</td>
+<td style="text-align:center">36.0%</td>
+<td style="text-align:center">40.2%</td>
+</tr>
+</tbody>
+</table>
+<p>Similar to the classification case, the performance degrades more when we rotate the objects. For rotation, the entire footrest is falsely predicted as the seat, and the original seat is falsely predicted as the chairback. This might come from the seat being oriented more vertically, and thus, the model falsely predicts it as the chairback.</p>
+<h2 id="q4-bonus-question---locality-20-points">Q4. Bonus Question - Locality (20 points)</h2>
+
+            
+            
+        </body>
+        </html>
